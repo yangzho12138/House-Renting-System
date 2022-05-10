@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.PaymentRecordDao">
+    <resultMap id="PaymentRecordResult" type="com.house.pojo.PaymentRecord">
+        <id column="id" property="id"></id>
+        <result column="house_id" property="houseId"></result>
+        <result column="owner_id" property="ownerId"></result>
+        <result column="renter_id" property="renterId"></result>
+        <result column="house_price" property="housePrice"></result>
+        <result column="platform_price" property="platformPrice"></result>
+        <result column="pay_date" property="payDate"></result>
+        <result column="status" property="status"></result>
+        <result column="info" property="info"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="houseId != null">
+                and house_id = #{houseId}
+            </if>
+            <if test="ownerId != null">
+                and owner_id = #{ownerId}
+            </if>
+            <if test="renterId != null">
+                and renter_id = #{renterId}
+            </if>
+            <if test="dateLimit != null">
+                and pay_date &gt;= #{dateLimit}
+            </if>
+            <if test="dateBound != null">
+                and pay_date &lt;= #{dateBound}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="PaymentRecordResult">
+        select * from payment_record
+        <include refid="condition"></include>
+        order by id asc, status asc
+        <if test="currPage != null and pageSize != null">
+            limit #{currPage}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from payment_record
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        insert into payment_record(house_id, owner_id, renter_id,
+        house_price, platform_price, pay_date, status, info)
+        values(#{houseId}, #{ownerId}, #{renterId},
+        #{housePrice}, #{platformPrice}, #{payDate}, #{status}, #{info})
+    </insert>
+
+    <update id="update">
+        update payment_record
+        <set>
+            <if test="houseId != null">
+                house_id = #{houseId},
+            </if>
+            <if test="ownerId != null">
+                owner_id = #{ownerId},
+            </if>
+            <if test="renterId != null">
+                renter_id = #{renterId},
+            </if>
+            <if test="housePrice != null">
+                house_price = #{housePrice},
+            </if>
+            <if test="platformPrice != null">
+                platform_price = #{platformPrice},
+            </if>
+            <if test="payDate != null">
+                pay_date = #{payDate},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="info != '' and info != null">
+                info = #{info},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from payment_record
+        where id in
+        <foreach collection="paymentRecordIds" item="paymentRecordId" open="(" close=")" separator=",">
+            #{paymentRecordId}
+        </foreach>
+    </delete>
+</mapper>

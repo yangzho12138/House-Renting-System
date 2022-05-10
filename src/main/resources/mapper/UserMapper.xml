@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.UserDao">
+    <resultMap id="UserResult" type="com.house.pojo.User">
+        <id column="id" property="id"></id>
+        <result column="username" property="username"></result>
+        <result column="phone" property="phone"></result>
+        <result column="password" property="password"></result>
+        <result column="type" property="type"></result>
+        <result column="info" property="info"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="username != '' and username != null">
+                and username = #{username}
+            </if>
+            <if test="phone != '' and phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="password != '' and password != null">
+                and password = #{password}
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="UserResult">
+        select * from user
+        <include refid="condition"></include>
+        order by id asc
+        <if test="currPage != null and pageSize != null">
+            limit currPage, pageSize
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from user
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        insert into user(username, phone, password, type, info)
+        values (#{username}, #{phone}, #{password}, #{type}, #{info})
+    </insert>
+
+    <update id="update">
+        update user
+        <set>
+            <if test="username != '' and username != null">
+                username = #{username},
+            </if>
+            <if test="phone != '' and phone != null">
+                phone = #{phone},
+            </if>
+            <if test="password != '' and password != null">
+                password = #{password},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="info != '' and info != null">
+                info = #{info},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from user
+        where id in
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

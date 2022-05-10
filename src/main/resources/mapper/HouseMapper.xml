@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.HouseDao">
+    <resultMap id="HouseResult" type="com.house.pojo.House">
+        <id column="id" property="id"></id>
+        <result column="address" property="address"></result>
+        <result column="type" property="type"></result>
+        <result column="max_users" property="maxUsers"></result>
+        <result column="owner_id" property="ownerId"></result>
+        <result column="price" property="price"></result>
+        <result column="status" property="status"></result>
+        <result column="info" property="info"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="address != '' and address != null">
+                and address like '%${address}%'
+            </if>
+            <if test="type != null">
+                and type = #{type}
+            </if>
+            <if test="userLimit != null">
+                and max_users &gt;= #{userLimit}
+            </if>
+            <if test="userBound != null">
+                and max_users &lt;= #{userBound}
+            </if>
+            <if test="ownerId != null">
+                and owner_id = #{ownerId}
+            </if>
+            <if test="priceLimit != null">
+                and price &gt; #{priceLimit}
+            </if>
+            <if test="priceBound != null">
+                and price &lt;= #{priceBound}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="HouseResult">
+        select * from houselist
+        <include refid="condition"></include>
+        order by
+        status ASC ,id ASC
+        <if test="currPage != null and pageSize != null">
+            limit #{currPage}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*)
+        from house
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO
+        house (address,type, max_users, owner_id,
+        price, status, info)
+        VALUES (#{address},#{type},#{maxUsers},#{ownerId},
+        #{price},#{status},#{info})
+    </insert>
+
+    <update id="update">
+        UPDATE house
+        <set>
+            <if test="address != '' and address != null">
+                address = #{address},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="maxUsers != null">
+                max_users = #{maxUsers},
+            </if>
+            <if test="ownerId != null">
+                owner_id = #{ownerId},
+            </if>
+            <if test="price != null">
+                price = #{price},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="info != '' and info != null">
+                info = #{info},
+            </if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from house where id in
+        <foreach collection="houseIds" item="houseId" separator="," open="(" close=")">
+            #{houseId}
+        </foreach>
+    </delete>
+</mapper>

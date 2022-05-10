@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.OwnerDao">
+    <resultMap id="OwnerResult" type="com.house.pojo.Owner">
+        <id column="id" property="id"></id>
+        <result column="owner_id" property="ownerId"></result>
+        <result column="name" property="name"></result>
+        <result column="address" property="address"></result>
+        <result column="card_id" property="cardId"></result>
+        <result column="phone" property="phone"></result>
+        <result column="status" property="status"></result>
+        <result column="info" property="info"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="ownerId != null">
+                and owner_id = #{ownerId}
+            </if>
+            <if test="name != '' and name != null">
+                and name = #{name}
+            </if>
+            <if test="address != '' and address != null">
+                and address like '%${address}%'
+            </if>
+            <if test="cardId != '' and cardId != null">
+                and card_id = #{cardId}
+            </if>
+            <if test="phone != '' and phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="OwnerResult">
+        select * from owner
+        <include refid="condition"></include>
+        order by owner_id asc
+        <if test="currPage != null and pageSize != null">
+            limit currPage, pageSize
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select * from owner
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        insert into owner(owner_id, name, address, card_id,
+        phone, status, info)
+        values(#{ownerId}, #{name}, #{address}, #{cardId},
+        #{phone}, #{status}, #{info})
+    </insert>
+
+    <update id="update">
+        update owner
+        <set>
+            <if test="name != '' and name != null">
+                 name = #{name},
+            </if>
+            <if test="address != '' and address != null">
+                address = #{address},
+            </if>
+            <if test="cardId != '' and cardId != null">
+                card_id = #{cardId},
+            </if>
+            <if test="phone != '' and phone != null">
+                phone = #{phone},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="info != '' and info != null">
+                info = #{info}
+            </if>
+        </set>
+        where owner_id = #{ownerId}
+    </update>
+
+    <delete id="delete">
+        delete from owner where id in
+        <foreach collection="ownerIds" item="ownerId" open="(" close=")" separator=",">
+            #{ownerId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.NoticeDao">
+    <resultMap id="NoticeResult" type="com.house.pojo.Notice">
+        <id column="id" property="id"></id>
+        <result column="content" property="content"></result>
+        <result column="from_date" property="fromDate"></result>
+        <result column="to_date" property="toDate"></result>
+        <result column="phone" property="phone"></result>
+        <result column="email" property="email"></result>
+        <result column="detail" property="detail"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="include != null">
+                and from_date &lt; #{include}
+                and to_date &gt; #{include}
+            </if>
+            <if test="outOfDate != null">
+                and (from_date &gt; #{outOfDate}
+                or to_date &lt; #{outOfDate})
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="email != null">
+                and email = #{email}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="NoticeResult">
+        select * from notice
+        <include refid="condition"></include>
+        order by id asc
+        <if test="currPage != null and pageSize != null">
+            limit #{currPage}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from notice
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        insert into notice(content, from_date, to_date,
+        phone, email, detail)
+        values(#{content}, #{fromDate}, #{toDate},
+        #{phone}, #{email}, #{detail})
+    </insert>
+
+    <update id="update">
+        update notice
+        <set>
+            <if test="content != '' and content != null">
+                content = #{content},
+            </if>
+            <if test="from_date != null">
+                from_date = #{fromDate},
+            </if>
+            <if test="to_date != null">
+                to_date = #{toDate},
+            </if>
+            <if test="phone != '' and phone != null">
+                phone = #{phone},
+            </if>
+            <if test="email != '' and email != null">
+                email = #{email},
+            </if>
+            <if test="detail != '' and detail != null">
+                detail = #{detail},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from notice
+        where id in
+        <foreach collection="noticeIds" item="noticeId" open="(" close=")" separator=",">
+            #{noticeId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.RenterDao">
+    <resultMap id="RenterResult" type="com.house.pojo.Renter">
+        <id column="id" property="id"></id>
+        <result column="renter_id" property="renterId"></result>
+        <result column="address" property="address"></result>
+        <result column="phone" property="phone"></result>
+        <result column="card_id" property="cardId"></result>
+        <result column="email" property="email"></result>
+        <result column="birth" property="birth"></result>
+        <result column="sex" property="sex"></result>
+        <result column="info" property="info"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="address != '' and address != null">
+                address like '%${address}%'
+            </if>
+            <if test="phone != '' and phone != null">
+                phone = #{phone}
+            </if>
+            <if test="cardId != '' and cardId != null">
+                card_id = #{cardId}
+            </if>
+            <if test="email != '' and email != null">
+                email = #{email}
+            </if>
+            <if test="birth != '' and birth != null">
+                birth = #{birth}
+            </if>
+            <if test="sex != null">
+                sex = #{sex}
+            </if>
+            <if test="info != null">
+                info = #{info}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="RenterResult">
+        select * from renter
+        <include refid="condition"></include>
+        order by renter_id asc
+        <if test="currPage != null and pageSize != null">
+            limit currPage, pageSize
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from renter
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        insert into renter(renter_id, address, phone, card_id,
+        email, birth, sex, info)
+        values(#{renterId}, #{address}, #{phone}, #{cardId},
+        #{email}, #{birth}, #{sex}, #{info})
+    </insert>
+
+    <update id="update">
+        update renter
+        <set>
+            <if test="address != '' and address != null">
+                address = #{address},
+            </if>
+            <if test="phone != '' and phone != null">
+                phone = #{phone},
+            </if>
+            <if test="cardId != '' and cardId != null">
+                card_id = #{cardId},
+            </if>
+            <if test="email != '' and email != null">
+                email = #{email},
+            </if>
+            <if test="birth != '' and birth != null">
+                birth = #{birth},
+            </if>
+            <if test="sex != null">
+                sex = #{sex},
+            </if>
+            <if test="info != '' and info != null">
+                info = #{info},
+            </if>
+        </set>
+        where renter_id = #{renterId}
+    </update>
+
+    <delete id="delete">
+        delete from renter where id in
+        <foreach collection="renterIds" item="renterId" open="(" close=")" separator=",">
+            #{renterId}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.HouseRentRelationDao">
+    <resultMap id="HouseRentRelationResult" type="com.house.pojo.HouseRentRelation">
+        <id column="id" property="id"></id>
+        <result column="house_id" property="houseId"></result>
+        <result column="renter_id" property="renterId"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="houseId != null">
+                and house_id = #{houseId}
+            </if>
+            <if test="renterId != null">
+                and renter_id = #{renterId}
+            </if>
+        </where>
+    </sql>
+
+    <select id="select" resultMap="HouseRentRelationResult">
+        select * from house_rent
+        <include refid="condition"></include>
+        order by house_id
+        <if test="currPage != null and pageSize != null">
+            limit #{currPage}, #{pageSize}
+        </if>
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from house_rent
+        <include refid="condition"></include>
+    </select>
+
+    <insert id="insert">
+        insert into house_rent(house_id, renter_id)
+        values(#{houseId}, #{renterId})
+    </insert>
+
+    <update id="update">
+        update house_rent
+        <set>
+            <if test="houseId != null">
+                house_id = #{houseId},
+            </if>
+            <if test="renterId != null">
+                renter_id = #{renterId},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from house_rent
+        <include refid="condition"></include>
+    </delete>
+
+</mapper>
