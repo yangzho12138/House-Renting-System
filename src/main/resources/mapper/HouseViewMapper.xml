@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.house.dao.HouseViewDao">
+    <resultMap id="HouseViewResult" type="com.house.pojo.HouseView">
+        <id column="id" property="id"></id>
+        <result column="house_id" property="houseId"></result>
+        <result column="renter_id" property="renterId"></result>
+        <result column="view_date" property="viewDate"></result>
+        <result column="star" property="star"></result>
+        <result column="detail" property="detail"></result>
+    </resultMap>
+
+    <sql id="condition">
+        <where>
+            <if test="houseId != null">
+                and house_id = #{houseId}
+            </if>
+            <if test="renterId != null">
+                and renter_id = #{renterId}
+            </if>
+            <if test="viewDateLowerLimit != null">
+                and view_date &gt;= #{viewDateLowerLimit}
+            </if>
+            <if test="viewDateUpperLimit != null">
+                and view_date &lt;= #{viewDateUpperLimit}
+            </if>
+            <if test="star != null">
+                and star = #{star}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="insert">
+        insert into house_view(house_id, renter_id, view_date,
+        star, detail)
+        values (#{houseId}, #{renterId}, #{viewDate}, #{star}, #{detail})
+    </insert>
+
+    <update id="update">
+        update house_view
+        <set>
+            <if test="view_date != null">
+                view_date = #{viewDate},
+            </if>
+            <if test="star != null">
+                star = #{star},
+            </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from house_view
+        where id in
+        <foreach collection="houseViewIds" item="houseViewId" open="(" close=")" separator=",">
+            #{houseViewId}
+        </foreach>
+    </delete>
+
+
+    <select id="select" resultType="com.house.pojo.HouseView">
+        select * from house_view
+        <include refid="condition"></include>
+        order by id asc
+        <if test="currPage != null and pageSize != null">
+            limit #{currPage}, #{pageSize}
+        </if>
+    </select>
+
+
+    <select id="count" resultType="java.lang.Integer">
+        select count(*) from house_view
+        <include refid="condition"></include>
+    </select>
+
+
+</mapper>

@@ -13,8 +13,15 @@ public class OperationException extends RuntimeException {
 
     private ExceptionEnum exceptionType;
 
+    private String exceptionReason;
+
     public OperationException(ExceptionEnum exceptionType){
         this.exceptionType = exceptionType;
+    }
+
+    public OperationException(ExceptionEnum exceptionType, String exceptionReason){
+        this.exceptionType = exceptionType;
+        this.exceptionReason = exceptionReason;
     }
 
     public ExceptionEnum getExceptionType() {
@@ -23,5 +30,13 @@ public class OperationException extends RuntimeException {
 
     public void setExceptionType(ExceptionEnum exceptionType) {
         this.exceptionType = exceptionType;
+    }
+
+    public String getExceptionReason() {
+        return exceptionReason;
+    }
+
+    public void setExceptionReason(String exceptionReason) {
+        this.exceptionReason = exceptionReason;
     }
 }

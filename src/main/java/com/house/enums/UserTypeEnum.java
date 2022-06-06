@@ -23,4 +23,12 @@ public enum UserTypeEnum {
         }
         return null;
     }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getType() {
+        return type;
+    }
 }

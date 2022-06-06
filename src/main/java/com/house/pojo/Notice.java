@@ -32,6 +32,19 @@ public class Notice {
      **/
     private String phone;
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * 通知对象的用户 ID
+     **/
+    private Integer userId;
+
     /**
      * 通知对象邮箱
      **/

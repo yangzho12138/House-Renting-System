@@ -18,4 +18,6 @@ public interface NoticeDao {
     Integer update(Notice notice);
 
     Integer delete(List<Integer> noticeIds);
+
+    void updateByUserId(Notice notice);
 }

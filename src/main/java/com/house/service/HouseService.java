@@ -9,9 +9,7 @@ import com.house.pojo.House;
 import com.house.utils.PageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,45 +31,45 @@ public class HouseService {
 
     public void addHouse(House house) {
         if(house == null){
-            throw new OperationException(ExceptionEnum.Parameter_Null_Exception);
+            throw new OperationException(ExceptionEnum.PARAMETER_NULL_EXCEPTION);
         }
         try{
             int effectedNum = houseDao.insert(house);
             if(effectedNum < 1){
-                throw new OperationException(ExceptionEnum.Database_Operation_Exception);
+                throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
             }
         }catch (Exception e){
-            throw new OperationException(ExceptionEnum.Database_Connection_Exception);
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
         }
     }
 
     public void deleteHouse(Integer houseId) {
         if(houseId == null){
-            throw new OperationException(ExceptionEnum.Parameter_Null_Exception);
+            throw new OperationException(ExceptionEnum.PARAMETER_NULL_EXCEPTION);
         }
         try{
             List<Integer> houseIds = new ArrayList<>();
             houseIds.add(houseId);
             int effectedNum = houseDao.delete(houseIds);
             if(effectedNum < 1){
-                throw new OperationException(ExceptionEnum.Database_Operation_Exception);
+                throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
             }
         }catch (Exception e){
-            throw new OperationException(ExceptionEnum.Database_Connection_Exception);
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
         }
     }
 
     public void updateHouse(House house) {
         if(house == null || house.getId() == null){
-            throw new OperationException(ExceptionEnum.Parameter_Null_Exception);
+            throw new OperationException(ExceptionEnum.PARAMETER_NULL_EXCEPTION);
         }
         try{
             int effectedNum = houseDao.update(house);
             if(effectedNum < 1){
-                throw new OperationException(ExceptionEnum.Database_Operation_Exception);
+                throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
             }
         }catch (Exception e){
-            throw new OperationException(ExceptionEnum.Database_Connection_Exception);
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
         }
     }
 

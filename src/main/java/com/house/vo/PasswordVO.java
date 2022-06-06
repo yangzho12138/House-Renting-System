@@ -1,18 +1,32 @@
 package com.house.vo;
 
+import javax.validation.constraints.NotBlank;
+
 public class PasswordVO {
 
-    private int userId;
+    private Integer userId;
 
+    private String phoneNumber;
+
+    @NotBlank(message = "用户旧密码不为空")
     private String oldPassword;
 
+    @NotBlank(message = "用户新密码不为空")
     private String newPassword;
 
-    public int getUserId() {
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

@@ -3,8 +3,8 @@ package com.house.enums;
 public enum  HouseStatusEnum {
 
     Not_Rented(0, "未出租"),
-    Rented(1, "已出租满"),
-    Out_Date(2, "已过期");
+    Rented(1, "已出租"),
+    Out_Date(2, "租期到期且未缴费");
 
     private final Integer code;
 
@@ -16,6 +16,12 @@ public enum  HouseStatusEnum {
     }
 
     public String of(Integer code){
+        for (HouseStatusEnum houseStatusEnum : HouseStatusEnum.values()){
+            if (houseStatusEnum.getCode().equals(code)){
+                return houseStatusEnum.getStatus();
+            }
+        }
+        return null;
     }
 
     public Integer getCode() {

@@ -1,4 +1,4 @@
-package com.house.controller;
+package com.house.config;
 
 import com.house.common.Result;
 import com.house.common.StatusCode;
@@ -17,6 +17,6 @@ public class BaseExceptionHandler {
     @ExceptionHandler(value = OperationException.class)
     public Result exception(OperationException e){
         e.printStackTrace();
-        return Result.error(e.getMessage());
+        return Result.error(e.getExceptionType().getMessage());
     }
 }

@@ -24,6 +24,12 @@ mybatis:
    #mybatis.configuration.map-underscore-to-camel-case=true开启驼峰命名识别
    configuration:
      map-underscore-to-camel-case: true
+## jwt 令牌的相关配置
+jwt:
+  secret: zhangbo #私钥
+  expiration: 21600000 #过期时间，6个小时
+  header: JWTHeader #请求头部存放的 token 令牌
+  refresh_expiration: 651000000 #刷新 token 的过期时间 7 天
 
 
 

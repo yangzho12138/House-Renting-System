@@ -5,13 +5,15 @@ import java.util.Map;
 
 import com.house.dto.LoginUser;
 import com.house.common.Result;
-import com.house.common.StatusCode;
-import com.house.dto.UserExecution;
+import com.house.enums.UserTypeEnum;
 import com.house.pojo.User;
 import com.house.service.UserService;
 import com.house.utils.JwtUtil;
+import com.house.validate.UserInsertValidate;
+import com.house.validate.UserUpdateValidate;
 import com.house.vo.PasswordVO;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,113 +21,70 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value="/user")
 public class UserController {
 
+	private final UserService userService;
 
-	@Autowired
-	private UserService userService;
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
 
-	
 	@RequestMapping(value = "/login",method = RequestMethod.POST)
-	public Map<String,Object> login(@RequestBody LoginUser loginUser) {
+	public Map<String,Object> login(@Validated @RequestBody LoginUser loginUser) {
 		Map<String,Object> map = new HashMap<>();
 		User user = userService.login(loginUser.getAccount(),loginUser.getPassword());
+		//登录失败，不存在该用户
 		if(user == null){
 			map.put("flag",false);
 			return map;
 		}
-		UserList userList = userService.findUserInfoByCondition(null,user.getId(),null);
 		//生成令牌
 		JwtUtil jwtUtil = new JwtUtil();
 		String token = null;
-		if(userList.getType() == 1){
+		if(UserTypeEnum.Admin.getCode().equals(user.getType())){
 			map.put("systemRole","admin");
-			token = jwtUtil.createJWT(String.valueOf(userList.getId()),user.getUsername(),"admin");
+			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"admin");
 
 		}else {
 			map.put("systemRole","user");
-			token = jwtUtil.createJWT(String.valueOf(userList.getId()),user.getUsername(),"user");
+			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"user");
 		}
-
-		map.put("userInfo",userList);
+		map.put("userInfo",user);
 		map.put("token",token);
 		map.put("flag",true);
 		return map;
-
 	}
 
-	@RequestMapping(value = "/getalluserlist",method = RequestMethod.GET)
-	public Result getAllUserList(){
-		return new Result(true, StatusCode.SUCCESS,"查找用户列表成功",userService.findUserListByCondition(null,null));
+	@RequestMapping(value = "/select",method = RequestMethod.GET)
+	public Result getUerListByCondition(@RequestParam Map<String, Object> params){
+		return Result.success("按条件查找用户列表成功",
+				userService.findUserByPage(params));
 	}
 
-	@RequestMapping(value = "/getuserlistbycondition",method = RequestMethod.POST)
-	public Result getuUerListByCondition(@RequestBody UserList userList){
-		return new Result(true, StatusCode.SUCCESS,"按条件查找用户列表成功",userService.findUserListByCondition(userList.getName(),userList.getId()));
+	@RequestMapping(value="/add",method = RequestMethod.POST)
+	public Result addUser(@Validated({UserInsertValidate.class}) @RequestBody User user){
+		userService.addUser(user);
+		return Result.success("添加用户成功");
 	}
 
-	@RequestMapping(value = "/getuserinfobycondition",method = RequestMethod.POST)
-	public Result getUserInfoByCondition(@RequestBody UserList userList){
-		return new Result(true, StatusCode.SUCCESS,"按条件查找用户列表成功",userService.findUserInfoByCondition(userList.getName(),userList.getUserId(),userList.getId()));
-
+	@RequestMapping(value="/update",method = RequestMethod.PUT)
+	public Result updateUser(@Validated({UserUpdateValidate.class}) @RequestBody User user){
+		userService.updateUser(user);
+		return Result.success("更新用户成功");
 	}
 
-	@RequestMapping(value="/adduser",method = RequestMethod.POST)
-	public Result addUser(@RequestBody UserList userList){
-		UserExecution ue;
-		try{
-			ue = userService.addUserListAndUserAccount(userList);
-			if(ue.isFlag()){
-				return new Result(true,StatusCode.SUCCESS,"添加用户成功");
-			}else {
-				return new Result(false,StatusCode.ERROR,"添加用户失败：" + ue.getReason());
-			}
-		}catch (Exception e){
-			return new Result(false,StatusCode.ERROR,"添加用户失败：" + e.toString());
+	@RequestMapping(value="/delete/{userId}",method = RequestMethod.DELETE)
+	public Result deleteUser(@PathVariable("userId")Integer userId){
+		userService.deleteUser(userId);
+		return Result.success("删除用户成功");
+	}
+
+	@RequestMapping(value="/editPassword",method = RequestMethod.PUT)
+	public Result updateUser(@Validated @RequestBody PasswordVO passwordVO){
+		if (StringUtils.isEmpty(passwordVO.getPhoneNumber()) &&
+		   passwordVO.getUserId() == null){
+			return Result.error("用户登录账号 ID 和电话号码为空");
 		}
-	}
-
-	@RequestMapping(value="/updateuser",method = RequestMethod.POST)
-	public Result updateUser(@RequestBody UserList userList){
-		UserExecution ue;
-		try{
-			ue = userService.updateUserList(userList);
-			if(ue.isFlag()){
-				return new Result(true,StatusCode.SUCCESS,"更新用户成功");
-			}else {
-				return new Result(false,StatusCode.ERROR,"更新用户失败：" + ue.getReason());
-			}
-		}catch (Exception e){
-			return new Result(false,StatusCode.ERROR,"更新用户失败：" + e.toString());
-		}
-	}
-
-	@RequestMapping(value="/deleteuser",method = RequestMethod.DELETE)
-	public Result deleteUser(@RequestParam("userListid")Integer userListid){
-		UserExecution ue;
-		try{
-			ue = userService.deleteUser(userListid);
-			if(ue.isFlag()){
-				return new Result(true,StatusCode.SUCCESS,"删除用户成功");
-			}else {
-				return new Result(false,StatusCode.ERROR,"删除用户失败：" + ue.getReason());
-			}
-		}catch (Exception e){
-			return new Result(false,StatusCode.ERROR,"删除用户失败：" + e.toString());
-		}
-	}
-
-	@RequestMapping(value="/editpassword",method = RequestMethod.POST)
-	public Result updateUser(@RequestBody PasswordVO passwordVO){
-		UserExecution ue;
-		try{
-			ue = userService.updatePassword(passwordVO);
-			if(ue.isFlag()){
-				return new Result(true,StatusCode.SUCCESS,"修改密码成功");
-			}else {
-				return new Result(false,StatusCode.ERROR,ue.getReason());
-			}
-		}catch (Exception e){
-			return new Result(false,StatusCode.ERROR,"修改密码失败：" + e.toString());
-		}
+		userService.updatePassword(passwordVO);
+		return Result.success("修改密码成功");
 	}
 
 

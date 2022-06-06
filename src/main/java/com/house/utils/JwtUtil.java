@@ -1,43 +1,41 @@
 package com.house.utils;
 
+import com.house.pojo.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Created by Administrator on 2018/4/11.
+ * JWT 令牌处理工具类
  */
-/*
-自动加载属性配置文件的key的前缀，并自动匹配setter属性，注入可以key对应的值,
-如：属性声明private String key上相当于加了注解@Value("jwt.config.key")
- */
+@Data
+@Component
+@ConfigurationProperties(prefix = "jwt")
 public class JwtUtil {
 
     //盐，秘钥
-    private String key = "itcast";
+    private String secret;
 
-    //过期时间的时长，这里推荐一个小时
-    private long ttl = 3600000;
+    //过期时间的时长
+    private Long expiration;
 
-    public String getKey() {
-        return key;
-    }
+    //令牌头部
+    private String header;
 
-    public long getTtl() {
-        return ttl;
-    }
+    //刷新令牌时间
+    private Long refresh_expiration;
 
 
     /**
      * 生成JWT
-     *
-     * @param id
-     * @param subject
-     * @return
      */
     public String createJWT(String id, String subject, String roles) {
         //当前时间
@@ -47,24 +45,43 @@ public class JwtUtil {
         JwtBuilder builder = Jwts.builder().setId(id)
                 .setSubject(subject)
                 .setIssuedAt(now)
-                .signWith(SignatureAlgorithm.HS256, key).claim("roles", roles);
+                .signWith(SignatureAlgorithm.HS256, secret).claim("roles", roles);
         //有过期时间
-        if (ttl > 0) {
-            builder.setExpiration( new Date( nowMillis + ttl));
+        if (expiration > 0) {
+            builder.setExpiration( new Date( nowMillis + expiration));
         }
         return builder.compact();
     }
 
     /**
      * 解析JWT
-     * @param jwtStr
-     * @return
      */
     public Claims parseJWT(String jwtStr){
         return  Jwts.parser()
-                .setSigningKey(key)
+                .setSigningKey(secret)
                 .parseClaimsJws(jwtStr)
                 .getBody();
     }
 
+//    public String generateToken(User user, String roles){
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("sub", user.getUsername());
+//        claims.put("create", new Date());
+//        claims.put("role", roles);
+//        return generateToken(claims);
+//    }
+//
+//    public String generateToken(Map<String, Object> claims){
+//        Date expirationDate = new Date(System.currentTimeMillis() + expiration);
+//        return Jwts.builder().setClaims(claims)
+//                .setExpiration(expirationDate)
+//                .signWith(SignatureAlgorithm.HS512, secret)
+//                .compact();
+//    }
+//
+//    public String generateRefreshToken(User user, String roles){
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("sub", user.getUsername());
+//        claims.put()
+//    }
 }

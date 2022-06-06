@@ -2,7 +2,7 @@ package com.house.enums;
 
 public enum PaymentStatusEnum {
 
-    Paid(0, "已经缴费"),
+    PaymentRecord(0, "已经缴费"),
     Owe(1, "欠费");
 
     private final Integer code;
@@ -23,4 +23,11 @@ public enum PaymentStatusEnum {
         return null;
     }
 
+    public Integer getCode() {
+        return code;
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }

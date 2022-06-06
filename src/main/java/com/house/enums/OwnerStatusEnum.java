@@ -2,7 +2,8 @@ package com.house.enums;
 
 public enum OwnerStatusEnum {
     Alive(0, "未注销"),
-    Withdraw(1, "已注销");
+    Withdraw(1, "已注销"),
+    Seal(2, "被封控");
 
     private final Integer code;
 

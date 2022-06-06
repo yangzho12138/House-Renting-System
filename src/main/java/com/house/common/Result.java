@@ -26,12 +26,20 @@ public class Result {
         this.data = data;
     }
 
+    public static Result success(String message, Integer code, Object data){
+        return new Result(true, code, message, data);
+    }
+
     public static Result success(String message, Object data){
         return new Result(true, StatusCode.SUCCESS, message, data);
     }
 
     public static Result success(String message){
         return new Result(true, StatusCode.SUCCESS, message, null);
+    }
+
+    public static Result error(String message, Integer code, Object data){
+        return new Result(false, StatusCode.ERROR, message, data);
     }
 
     public static Result error(String message, Object data){

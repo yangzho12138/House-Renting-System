@@ -1,5 +1,12 @@
 package com.house.pojo;
 
+import com.house.enums.PaymentStatusEnum;
+import com.house.validate.EnumValid;
+import com.house.validate.PaymentRecordInsertValidate;
+import com.house.validate.PaymentRecordUpdateValidate;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.math.BigDecimal;
 import java.sql.Date;
 
@@ -11,32 +18,37 @@ public class PaymentRecord {
     /**
      * 缴费记录 ID
      **/
+    @NotNull(message = "缴费记录 ID 不为空", groups = {PaymentRecordUpdateValidate.class})
     private Integer id;
 
     /**
      * 房屋 ID
      **/
+    @NotNull(message = "房屋 ID 不为空", groups = {PaymentRecordInsertValidate.class})
     private Integer houseId;
 
     /**
      * 房主 ID
      **/
+    @NotNull(message = "房主 ID 不为空", groups = {PaymentRecordInsertValidate.class})
     private Integer ownerId;
 
     /**
      * 租户 ID
      **/
+    @NotNull(message = "租户 ID 不为空", groups = {PaymentRecordInsertValidate.class})
     private Integer renterId;
 
     /**
      * 房屋租赁费用
      **/
+    @NotNull(message = "房屋租赁费用不为空", groups = {PaymentRecordInsertValidate.class})
     private BigDecimal housePrice;
 
     /**
      * 平台手续费用
      **/
-    private BigDecimal platformPrice;
+    private BigDecimal platformPrice = BigDecimal.TEN;
 
     /**
      * 缴费日期
@@ -46,7 +58,7 @@ public class PaymentRecord {
     /**
      * 缴费状态
      **/
-    private Integer status;
+    private Integer status = PaymentStatusEnum.Owe.getCode();
 
     /**
      * 其他信息

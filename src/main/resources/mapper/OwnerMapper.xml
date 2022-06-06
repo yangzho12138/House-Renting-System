@@ -82,7 +82,7 @@
     </update>
 
     <delete id="delete">
-        delete from owner where id in
+        delete from owner where owner_id in
         <foreach collection="ownerIds" item="ownerId" open="(" close=")" separator=",">
             #{ownerId}
         </foreach>

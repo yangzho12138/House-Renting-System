@@ -89,7 +89,7 @@
     </update>
 
     <delete id="delete">
-        delete from renter where id in
+        delete from renter where renter_id in
         <foreach collection="renterIds" item="renterId" open="(" close=")" separator=",">
             #{renterId}
         </foreach>

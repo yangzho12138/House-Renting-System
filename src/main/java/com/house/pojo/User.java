@@ -1,5 +1,12 @@
 package com.house.pojo;
 
+import com.house.enums.UserTypeEnum;
+import com.house.validate.UserInsertValidate;
+import com.house.validate.UserUpdateValidate;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @version 用户信息实体类
  * @since 2022/5/9
@@ -8,27 +15,31 @@ public class User {
 	/**
 	 * 用户 ID
 	 **/
+	@NotNull(message = "用户 ID 不为空", groups = {UserUpdateValidate.class})
 	private Integer id;
 
 	/**
 	 * 用户名称
 	 **/
+	@NotBlank(message = "用户名称不为空", groups = {UserInsertValidate.class})
 	private String username;
 
 	/**
 	 * 用户电话号码
 	 **/
+	@NotBlank(message = "用户电话号码不为空", groups = {UserInsertValidate.class})
 	private String phone;
 
 	/**
 	 * 用户登录密码
 	 **/
+	@NotBlank(message = "用户登录密码不为空", groups = {UserInsertValidate.class})
 	private String password;
 
 	/**
 	 * 用户类型
 	 **/
-	private Integer type;
+	private String type = "2";
 
 	/**
 	 * 其他信息
@@ -67,11 +78,11 @@ public class User {
 		this.password = password;
 	}
 
-	public Integer getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(Integer type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 
