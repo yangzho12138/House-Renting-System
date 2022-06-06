@@ -1,5 +1,6 @@
 package com.house.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,12 +14,14 @@ import com.house.dao.UserDao;
 import com.house.dto.UserDetail;
 import com.house.enums.ExceptionEnum;
 import com.house.enums.HouseStatusEnum;
+import com.house.enums.UserStatusEnum;
 import com.house.exception.OperationException;
 import com.house.pojo.*;
 import com.house.pojo.User;
 import com.house.utils.PageUtil;
 import com.house.vo.PasswordVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -60,7 +63,12 @@ public class UserService {
 			detail.setId(user.getId());
 			detail.setUsername(user.getUsername());
 			detail.setPassword(user.getPassword());
-			detail.setEnabled();
+			detail.setEnabled(UserStatusEnum.ENABLE.getCode().equals(user.getStatus()));
+			List<GrantedAuthority> authorities = new ArrayList<>();
+
+
+
+
 		}
 	}
 

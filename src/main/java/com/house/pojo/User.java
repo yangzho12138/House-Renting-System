@@ -1,5 +1,6 @@
 package com.house.pojo;
 
+import com.house.enums.UserStatusEnum;
 import com.house.enums.UserTypeEnum;
 import com.house.validate.UserInsertValidate;
 import com.house.validate.UserUpdateValidate;
@@ -40,6 +41,11 @@ public class User {
 	 * 用户类型
 	 **/
 	private String type = "2";
+
+	/**
+	 * 用户状态
+	 **/
+	private Integer status = UserStatusEnum.ENABLE.getCode();
 
 	/**
 	 * 其他信息
@@ -84,6 +90,14 @@ public class User {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	public String getInfo() {

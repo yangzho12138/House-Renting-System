@@ -7,6 +7,7 @@
         <result column="phone" property="phone"></result>
         <result column="password" property="password"></result>
         <result column="type" property="type"></result>
+        <result column="status" property="status"></result>
         <result column="info" property="info"></result>
     </resultMap>
 
@@ -15,17 +16,20 @@
             <if test="id != null">
                 and id = #{id}
             </if>
-            <if test="username != '' and username != null">
+            <if test="username != null and username != ''">
                 and username = #{username}
             </if>
-            <if test="phone != '' and phone != null">
+            <if test="phone != null and phone != ''">
                 and phone = #{phone}
             </if>
-            <if test="password != '' and password != null">
+            <if test="password != null and password != ''">
                 and password = #{password}
             </if>
-            <if test="type != null">
+            <if test="type != '' and type != null">
                 and type = #{type}
+            </if>
+            <if test="status != null">
+                and status = #{status}
             </if>
         </where>
     </sql>
@@ -45,24 +49,27 @@
     </select>
 
     <insert id="insert">
-        insert into user(username, phone, password, type, info)
-        values (#{username}, #{phone}, #{password}, #{type}, #{info})
+        insert into user(username, phone, password, type, status, info)
+        values (#{username}, #{phone}, #{password}, #{type}, #{status}, #{info})
     </insert>
 
     <update id="update">
         update user
         <set>
-            <if test="username != '' and username != null">
+            <if test="username != null and username != ''">
                 username = #{username},
             </if>
-            <if test="phone != '' and phone != null">
+            <if test="phone != null and phone != ''">
                 phone = #{phone},
             </if>
-            <if test="password != '' and password != null">
+            <if test="password != null and password != ''">
                 password = #{password},
             </if>
-            <if test="type != null">
+            <if test="type != null and type != ''">
                 type = #{type},
+            </if>
+            <if test="status != null">
+                status = #{status}
             </if>
             <if test="info != '' and info != null">
                 info = #{info},
