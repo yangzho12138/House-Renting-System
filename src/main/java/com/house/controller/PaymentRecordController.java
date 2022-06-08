@@ -46,4 +46,13 @@ public class PaymentRecordController {
         paymentRecordService.deletePaymentRecord(paymentRecordId);
         return Result.success("删除缴费信息记录成功");
     }
+
+    @RequestMapping(value = "/pay")
+    public Result payForTheHouse(@RequestParam("paymentRecordId") Integer paymentRecordId){
+        if (paymentRecordId == null){
+            return Result.error("房租缴费失败，请选择您需要缴费的订单进行缴纳或联系管理员手动缴费");
+        }
+        paymentRecordService.pay(paymentRecordId);
+        return Result.success("房租缴费成功");
+    }
 }

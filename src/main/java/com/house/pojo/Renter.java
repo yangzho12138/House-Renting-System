@@ -1,5 +1,11 @@
 package com.house.pojo;
 
+import com.house.validate.RenterInsertValidate;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 /**
  * @version 租户信息实体类
  * @since 2022/5/9
@@ -23,16 +29,20 @@ public class Renter {
     /**
      * 租户电话号码
      **/
+    @NotBlank(message = "租户的电话号码不允许为空")
     private String phone;
 
     /**
      * 租户身份证号码
      **/
+    @NotBlank(message = "租户身份证号码不允许为空")
     private String cardId;
 
     /**
      * 租户电子邮箱
      **/
+    @NotBlank(message = "租户电子邮箱不允许为空")
+    @Email(message = "租户电子邮箱格式不合法")
     private String email;
 
     /**
