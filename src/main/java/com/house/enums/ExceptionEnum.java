@@ -10,7 +10,15 @@ public enum ExceptionEnum {
     DATABASE_CONNECTION_EXCEPTION(10003, "数据库访问连接异常"),
     USER_NOT_FOUND_OR_PASSWORD_WRONG(10004, "用户不存在或密码错误"),
     OWNER_HOUSE_RENTED(10005, "名下房产还处租期内，无法删除用户"),
-    RENTED_HOUSE_NOT_OUT_DATE(10006, "租取房产还处租期内，无法删除");
+    RENTED_HOUSE_NOT_OUT_DATE(10006, "租取房产还处租期内，无法删除"),
+    USER_ACCOUNT_LOCKED(10007, "用户账户已禁用，请联系管理员"),
+    PASSWORD_WRONG_EXCEPTION(10008, "密码错误，请重新输入"),
+    USER_ACCOUNT_NOT_EXIST(10009, "用户名（电话号码不存在）"),
+    USER_ACCOUNT_EXPIRED(10010, "账号已过期"),
+    USER_ACCOUNT_PASSWORD_EXPIRED(10011, "密码过期"),
+    USER_ACCOUNT_DISABLE(10012, "账号不可用"),
+    USER_NOT_LOGIN(10013, "用户未登录成功"),
+    USER_NO_PERMISSIONS(10014, "用户权限不足");
 
     private final Integer code;
 

@@ -5,17 +5,17 @@ import javax.validation.constraints.NotBlank;
 public class LoginUser {
 
     @NotBlank(message = "登录账号 ID 不为空")
-    private String account;
+    private String username;
 
     @NotBlank(message = "登录密码不为空")
     private String password;
 
-    public String getAccount() {
-        return account;
+    public String getUsername() {
+        return username;
     }
 
-    public void setAccount(String account) {
-        this.account = account;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {

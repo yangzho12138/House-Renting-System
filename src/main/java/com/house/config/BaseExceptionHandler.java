@@ -19,4 +19,6 @@ public class BaseExceptionHandler {
         e.printStackTrace();
         return Result.error(e.getExceptionType().getMessage());
     }
+
+    //TODO 捕获 AuthenticationException 异常
 }

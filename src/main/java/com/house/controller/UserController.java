@@ -5,10 +5,9 @@ import java.util.Map;
 
 import com.house.dto.LoginUser;
 import com.house.common.Result;
-import com.house.enums.UserTypeEnum;
 import com.house.pojo.User;
+import com.house.service.LoginService;
 import com.house.service.UserService;
-import com.house.utils.JwtUtil;
 import com.house.validate.UserInsertValidate;
 import com.house.validate.UserUpdateValidate;
 import com.house.vo.PasswordVO;
@@ -23,34 +22,45 @@ public class UserController {
 
 	private final UserService userService;
 
-	public UserController(UserService userService) {
+	private final LoginService loginService;
+
+	public UserController(UserService userService, LoginService loginService) {
 		this.userService = userService;
+		this.loginService = loginService;
 	}
 
-	@RequestMapping(value = "/login",method = RequestMethod.POST)
-	public Map<String,Object> login(@Validated @RequestBody LoginUser loginUser) {
-		Map<String,Object> map = new HashMap<>();
-		User user = userService.login(loginUser.getAccount(),loginUser.getPassword());
-		//登录失败，不存在该用户
-		if(user == null){
-			map.put("flag",false);
-			return map;
-		}
-		//生成令牌
-		JwtUtil jwtUtil = new JwtUtil();
-		String token = null;
-		if(UserTypeEnum.Admin.getCode().equals(user.getType())){
-			map.put("systemRole","admin");
-			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"admin");
+	@RequestMapping(value = "/doLogin",method = RequestMethod.POST)
+	public Result login(@Validated @RequestBody LoginUser loginUser) {
+//		Map<String,Object> map = new HashMap<>();
+//		User user = userService.login(loginUser.getAccount(),loginUser.getPassword());
+//		//登录失败，不存在该用户
+//		if(user == null){
+//			map.put("flag",false);
+//			return map;
+//		}
+//		//生成令牌
+//		JwtUtil jwtUtil = new JwtUtil();
+//		String token = null;
+//		if(UserTypeEnum.Admin.getCode().equals(user.getType())){
+//			map.put("systemRole","admin");
+//			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"admin");
+//
+//		}else {
+//			map.put("systemRole","user");
+//			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"user");
+//		}
+//		map.put("userInfo",user);
+//		map.put("token",token);
+//		map.put("flag",true);
+//		return map;
+		loginService.login(loginUser);
+		return Result.success("登录成功");
+	}
 
-		}else {
-			map.put("systemRole","user");
-			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"user");
-		}
-		map.put("userInfo",user);
-		map.put("token",token);
-		map.put("flag",true);
-		return map;
+	@RequestMapping("/doLogout")
+	public Result logout(){
+		loginService.logout();
+		return Result.success("注销成功");
 	}
 
 	@RequestMapping(value = "/select",method = RequestMethod.GET)

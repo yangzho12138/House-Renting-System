@@ -11,7 +11,7 @@ import com.google.common.collect.*;
 import com.house.common.Page;
 import com.house.dao.*;
 import com.house.dao.UserDao;
-import com.house.dto.UserDetail;
+import com.house.dto.AuthUser;
 import com.house.enums.ExceptionEnum;
 import com.house.enums.HouseStatusEnum;
 import com.house.enums.UserStatusEnum;
@@ -22,6 +22,7 @@ import com.house.utils.PageUtil;
 import com.house.vo.PasswordVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -30,46 +31,34 @@ import org.springframework.util.StringUtils;
 @Service
 public class UserService {
 
-	@Autowired
-	private UserDao userDao;
+	private final UserDao userDao;
 
 	//TODO 后面这些操作全部改为服务，否则不符合层次规范
-	@Autowired
-	private OwnerDao ownerDao;
+	private final OwnerDao ownerDao;
 
-	@Autowired
-	private RenterDao renterDao;
+	private final RenterDao renterDao;
 
-	@Autowired
-	private NoticeDao noticeDao;
+	private final NoticeDao noticeDao;
 
-	@Autowired
-	private HouseDao houseDao;
+	private final HouseDao houseDao;
 
-	@Autowired
-	private HouseRentRelationDao houseRentRelationDao;
+	private final HouseRentRelationDao houseRentRelationDao;
 
-	public UserDetail login(String username, String password) {
-		Map<String, Object> params = new HashMap<>();
-		params.put("username", username);
-		params.put("password", password);
-		List<User> userList = userDao.select(params);
-		if (userList.isEmpty()){
-			throw new OperationException(ExceptionEnum.USER_NOT_FOUND_OR_PASSWORD_WRONG);
+	public UserService(UserDao userDao, OwnerDao ownerDao, RenterDao renterDao, NoticeDao noticeDao, HouseDao houseDao, HouseRentRelationDao houseRentRelationDao) {
+		this.userDao = userDao;
+		this.ownerDao = ownerDao;
+		this.renterDao = renterDao;
+		this.noticeDao = noticeDao;
+		this.houseDao = houseDao;
+		this.houseRentRelationDao = houseRentRelationDao;
+	}
+
+	public User getUserByPhone(String phone){
+		List<User> users = userDao.select(ImmutableMap.of("phone", phone));
+		if (users.isEmpty()){
+			return null;
 		}
-		User user = userList.get(0);
-		if (user != null){
-			UserDetail detail = new UserDetail();
-			detail.setId(user.getId());
-			detail.setUsername(user.getUsername());
-			detail.setPassword(user.getPassword());
-			detail.setEnabled(UserStatusEnum.ENABLE.getCode().equals(user.getStatus()));
-			List<GrantedAuthority> authorities = new ArrayList<>();
-
-
-
-
-		}
+		return users.get(0);
 	}
 
 	@Transactional
@@ -204,6 +193,4 @@ public class UserService {
 			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
 		}
 	}
-
-
 }

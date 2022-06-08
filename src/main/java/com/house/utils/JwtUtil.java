@@ -1,87 +1,132 @@
 package com.house.utils;
 
-import com.house.pojo.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Base64;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.UUID;
 
-/**
- * JWT 令牌处理工具类
- */
-@Data
 @Component
-@ConfigurationProperties(prefix = "jwt")
 public class JwtUtil {
 
-    //盐，秘钥
-    private String secret;
+    private static final Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
-    //过期时间的时长
-    private Long expiration;
+    private static String SECRET_KEY;
 
-    //令牌头部
-    private String header;
+    private static Long EXPIRATION_TIME;
 
-    //刷新令牌时间
-    private Long refresh_expiration;
 
+    //对于静态变量，需要使用set方法才能使用设置好的字段值
+    @Value("${jwt.secret}")
+    public void setSECRET_KEY(String SECRET_KEY) {
+        JwtUtil.SECRET_KEY = SECRET_KEY;
+    }
+
+    @Value("${jwt.expiration}")
+    public void setEXPIRATION_TIME(Long expiration) {
+        EXPIRATION_TIME = expiration;
+    }
+
+    public static String getUUID() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
 
     /**
-     * 生成JWT
+     * 生成jtw
+     *
+     * @param subject token中要存放的数据（json格式）
+     * @return
      */
-    public String createJWT(String id, String subject, String roles) {
-        //当前时间
-        long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
-        //构建JwtBuilder
-        JwtBuilder builder = Jwts.builder().setId(id)
-                .setSubject(subject)
-                .setIssuedAt(now)
-                .signWith(SignatureAlgorithm.HS256, secret).claim("roles", roles);
-        //有过期时间
-        if (expiration > 0) {
-            builder.setExpiration( new Date( nowMillis + expiration));
-        }
+    public static String createJWT(String subject) {
+        JwtBuilder builder = getJwtBuilder(subject, null, getUUID());// 设置过期时间
         return builder.compact();
     }
 
     /**
-     * 解析JWT
+     * 生成jtw
+     *
+     * @param subject   token中要存放的数据（json格式）
+     * @param ttlMillis token超时时间
+     * @return
      */
-    public Claims parseJWT(String jwtStr){
-        return  Jwts.parser()
-                .setSigningKey(secret)
-                .parseClaimsJws(jwtStr)
+    public static String createJWT(String subject, Long ttlMillis) {
+        JwtBuilder builder = getJwtBuilder(subject, ttlMillis, getUUID());// 设置过期时间
+        return builder.compact();
+    }
+
+    private static JwtBuilder getJwtBuilder(String subject, Long ttlMillis, String uuid) {
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        SecretKey secretKey = generalKey();
+        long nowMillis = System.currentTimeMillis();
+        Date now = new Date(nowMillis);
+        if (ttlMillis == null) {
+            ttlMillis = EXPIRATION_TIME;
+        }
+        long expMillis = nowMillis + ttlMillis;
+        Date expDate = new Date(expMillis);
+        return Jwts.builder()
+                .setId(uuid)              //唯一的ID
+                .setSubject(subject)   // 主题可以是JSON数据
+                .setIssuer("ZhangBo")     // 签发者
+                .setIssuedAt(now)      // 签发时间
+                .signWith(signatureAlgorithm, secretKey) //使用HS256对称加密算法签名, 第二个参数为秘钥
+                .setExpiration(expDate);
+    }
+
+    /**
+     * 创建token
+     *
+     * @param id
+     * @param subject
+     * @param ttlMillis
+     * @return
+     */
+    public static String createJWT(String id, String subject, Long ttlMillis) {
+        JwtBuilder builder = getJwtBuilder(subject, ttlMillis, id);// 设置过期时间
+        return builder.compact();
+    }
+
+    /**
+     * 生成加密后的秘钥 secretKey
+     *
+     * @return
+     */
+    public static SecretKey generalKey() {
+        byte[] encodedKey = Base64.getDecoder().decode(SECRET_KEY);
+        return new SecretKeySpec(encodedKey, 0, encodedKey.length, "AES");
+    }
+
+    /**
+     * 解析
+     *
+     * @param jwt
+     * @return
+     * @throws Exception
+     */
+    public static Claims parseJWT(String jwt) throws Exception {
+        SecretKey secretKey = generalKey();
+        return Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(jwt)
                 .getBody();
     }
 
-//    public String generateToken(User user, String roles){
-//        Map<String, Object> claims = new HashMap<>();
-//        claims.put("sub", user.getUsername());
-//        claims.put("create", new Date());
-//        claims.put("role", roles);
-//        return generateToken(claims);
-//    }
-//
-//    public String generateToken(Map<String, Object> claims){
-//        Date expirationDate = new Date(System.currentTimeMillis() + expiration);
-//        return Jwts.builder().setClaims(claims)
-//                .setExpiration(expirationDate)
-//                .signWith(SignatureAlgorithm.HS512, secret)
-//                .compact();
-//    }
-//
-//    public String generateRefreshToken(User user, String roles){
-//        Map<String, Object> claims = new HashMap<>();
-//        claims.put("sub", user.getUsername());
-//        claims.put()
-//    }
+    public static Boolean isTokenExpired(String token){
+        try{
+            Claims claims = parseJWT(token);
+            Date expiration = claims.getExpiration();
+            return expiration.before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

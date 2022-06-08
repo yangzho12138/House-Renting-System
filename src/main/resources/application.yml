@@ -28,8 +28,29 @@ mybatis:
 jwt:
   secret: zhangbo #私钥
   expiration: 21600000 #过期时间，6个小时
-  header: JWTHeader #请求头部存放的 token 令牌
+  header: Authorization #请求头部存放的 token 令牌
   refresh_expiration: 651000000 #刷新 token 的过期时间 7 天
+
+#redis配置
+redis:
+  #服务器地址
+  host: 120.77.80.135
+  #端口
+  port: 6379
+  #redis密码
+  password: XXXXXX
+  #超时时间
+  timeout: 1209600000ms
+  lettuce:
+    pool:
+      #最大链接数，默认8
+      max-active: 8
+      #最大连接阻塞等待时间，默认-1
+      max-wait: 10000ms
+      #最大空闲连接，默认8
+      max-idle: 200
+      #最小空闲连接，默认0
+      min-idle: 5
 
 
 

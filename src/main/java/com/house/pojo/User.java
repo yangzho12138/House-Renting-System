@@ -40,7 +40,7 @@ public class User {
 	/**
 	 * 用户类型
 	 **/
-	private String type = "2";
+	private String type = "USER";
 
 	/**
 	 * 用户状态

@@ -1,8 +1,6 @@
 package com.house.config;
 
 import com.google.common.collect.ImmutableList;
-import com.house.utils.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -18,13 +16,6 @@ import java.util.Collections;
 @Configuration
 public class CrossDomainConfig {
 
-    final
-    JwtUtil jwtUtil;
-
-    public CrossDomainConfig(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
-
     @Bean
     CorsConfigurationSource corsConfigurationSource(){
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -38,7 +29,11 @@ public class CrossDomainConfig {
         //允许服务端访问客户端请求头
         configuration.setAllowedHeaders(Collections.singletonList("*"));
         //暴露哪些头部信息，为完成认证，需要能访问令牌头部信息
-        configuration.setExposedHeaders(Collections.singletonList(jwtUtil.getHeader()));
+        configuration.setExposedHeaders(ImmutableList.of("access-control-allow-headers",
+                "access-control-allow-methods",
+                "access-control-allow-origin",
+                "access-control-max-age",
+                "X-Frame-Options"));
         //注册跨域配置
         source.registerCorsConfiguration("/**", configuration.applyPermitDefaultValues());
         return source;
