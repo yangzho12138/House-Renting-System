@@ -4,6 +4,8 @@ import com.house.enums.PaymentStatusEnum;
 import com.house.validate.EnumValid;
 import com.house.validate.PaymentRecordInsertValidate;
 import com.house.validate.PaymentRecordUpdateValidate;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -14,6 +16,8 @@ import java.sql.Date;
  * @version 缴费记录信息实体类
  * @since 2022/5/9
  **/
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentRecord {
     /**
      * 缴费记录 ID

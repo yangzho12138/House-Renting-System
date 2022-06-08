@@ -36,6 +36,8 @@
         </where>
     </sql>
 
+
+
     <select id="select" resultMap="PaymentRecordResult">
         select * from payment_record
         <include refid="condition"></include>
