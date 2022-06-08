@@ -3,12 +3,15 @@ package com.house.controller;
 import com.house.common.Page;
 import com.house.common.Result;
 import com.house.pojo.House;
+import com.house.pojo.HouseView;
 import com.house.service.HouseService;
 import com.house.service.RentService;
 import com.house.validate.HouseInsertValidate;
 import com.house.validate.HouseUpdateValidate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 import java.util.Map;
 
 @RestController
@@ -57,4 +60,17 @@ public class HouseController {
     }
 
 
+    // 根据houseid,renterid，把所有记录搜出来
+    @RequestMapping(value="/viewer/select",method = RequestMethod.GET)
+    public Result getHouseViewList(@RequestParam("params") Map<String, Object> params){
+        Page page = houseService.findHouseViewListPage(params);
+        return Result.success("查找租房记录成功", page);
+    }
+
+    // 插入 houseid,renterid,detail,star,date
+    @RequestMapping(value="/viewer/insert",method = RequestMethod.POST)
+    public Result addHouseView(@RequestBody @Valid HouseView houseView){
+        houseService.addHouseView(houseView);
+        return Result.success("添加租房信息信息成功");
+    }
 }

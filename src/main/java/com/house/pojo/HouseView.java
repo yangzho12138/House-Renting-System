@@ -1,5 +1,6 @@
 package com.house.pojo;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Date;
 
 /**
@@ -11,16 +12,19 @@ public class HouseView {
     /**
      * 看房记录 ID
      **/
+
     private Integer id;
 
     /**
      * 房屋 ID
      **/
+    @NotNull(message = "房屋id不为空")
     private Integer houseId;
 
     /**
      * 租户 ID
      **/
+    @NotNull(message = "租户id不为空")
     private Integer renterId;
 
     /**
