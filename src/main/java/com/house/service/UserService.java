@@ -207,27 +207,27 @@ public class UserService {
 		loginService.doLogin(ConvertUtil.convert(user));
     }
 
-    public void addHouseRentRelation(HouseRentRelation houseRentRelation){
-		if(houseRentRelation == null){
-			throw new OperationException(ExceptionEnum.PARAMETER_NULL_EXCEPTION);
-		}
-		try{
-			int effectedNum = houseRentRelationDao.insert(houseRentRelation);
-			if(effectedNum < 1){
-				throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
-			}
-		}catch (Exception e){
-			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
-		}
-	}
+//    public void addHouseRentRelation(HouseRentRelation houseRentRelation){
+//		if(houseRentRelation == null){
+//			throw new OperationException(ExceptionEnum.PARAMETER_NULL_EXCEPTION);
+//		}
+//		try{
+//			int effectedNum = houseRentRelationDao.insert(houseRentRelation);
+//			if(effectedNum < 1){
+//				throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
+//			}
+//		}catch (Exception e){
+//			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
+//		}
+//	}
 
-	public void deleteHouseRentRelation(Map<String,Object> params){
-		try{
-			int effectedNum = houseRentRelationDao.delete(params);
-			if(effectedNum < 1){
-				throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
-			}
-		}catch (Exception e){
-			throw
-	}
+//	public void deleteHouseRentRelation(Map<String,Object> params){
+//		try{
+//			int effectedNum = houseRentRelationDao.delete(params);
+//			if(effectedNum < 1){
+//				throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
+//			}
+//		}catch (Exception e){
+//			throw
+//	}
 }
