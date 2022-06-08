@@ -1,11 +1,14 @@
 package com.house.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.house.dao.OwnerDao;
 import com.house.enums.ExceptionEnum;
 import com.house.exception.OperationException;
 import com.house.pojo.Owner;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @version 房主操作服务
@@ -51,5 +54,11 @@ public class HouseOwnerService {
         } catch (Exception e){
             throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, e.getMessage());
         }
+    }
+
+    public Owner getByOwnerId(Integer ownerId) {
+        List<Owner> ownerList =
+                ownerDao.select(ImmutableMap.of("ownerId", ownerId));
+        return ownerList.get(0);
     }
 }
