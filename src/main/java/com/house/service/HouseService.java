@@ -16,8 +16,11 @@ import java.util.Map;
 @Service
 public class HouseService {
 
-    @Autowired
-    private HouseDao houseDao;
+    private final HouseDao houseDao;
+
+    public HouseService(HouseDao houseDao) {
+        this.houseDao = houseDao;
+    }
 
     public Page findHouseListByPage(Map<String, Object> params) {
         Integer totalCount = houseDao.count(params);

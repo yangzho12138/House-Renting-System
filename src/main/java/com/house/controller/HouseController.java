@@ -4,6 +4,7 @@ import com.house.common.Page;
 import com.house.common.Result;
 import com.house.pojo.House;
 import com.house.service.HouseService;
+import com.house.service.RentService;
 import com.house.validate.HouseInsertValidate;
 import com.house.validate.HouseUpdateValidate;
 import org.springframework.validation.annotation.Validated;
@@ -17,14 +18,23 @@ public class HouseController {
 
     private final HouseService houseService;
 
-    public HouseController(HouseService houseService) {
+    private final RentService rentService;
+
+    public HouseController(HouseService houseService, RentService rentService) {
         this.houseService = houseService;
+        this.rentService = rentService;
     }
 
     @RequestMapping(value = "/select",method = RequestMethod.GET)
     public Result getHouseList(@RequestParam("params") Map<String, Object> params){
         Page page = houseService.findHouseListByPage(params);
         return Result.success("查找房屋信息列表成功", page);
+    }
+
+    @RequestMapping(value = "/rent/{houseId}")
+    public Result rentHouse(@PathVariable(value = "houseId") Integer houseId){
+        rentService.rent(houseId);
+        return Result.success("房子已被出租，请在三日内进行缴费缴费");
     }
 
 

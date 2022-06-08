@@ -10,6 +10,11 @@ public class LoginUser {
     @NotBlank(message = "登录密码不为空")
     private String password;
 
+    public LoginUser(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getUsername() {
         return username;
     }

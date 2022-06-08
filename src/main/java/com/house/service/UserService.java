@@ -1,6 +1,5 @@
 package com.house.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,20 +8,17 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.*;
 import com.house.common.Page;
+import com.house.common.Result;
 import com.house.dao.*;
 import com.house.dao.UserDao;
-import com.house.dto.AuthUser;
 import com.house.enums.ExceptionEnum;
 import com.house.enums.HouseStatusEnum;
-import com.house.enums.UserStatusEnum;
 import com.house.exception.OperationException;
 import com.house.pojo.*;
 import com.house.pojo.User;
+import com.house.utils.ConvertUtil;
 import com.house.utils.PageUtil;
 import com.house.vo.PasswordVO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -44,13 +40,16 @@ public class UserService {
 
 	private final HouseRentRelationDao houseRentRelationDao;
 
-	public UserService(UserDao userDao, OwnerDao ownerDao, RenterDao renterDao, NoticeDao noticeDao, HouseDao houseDao, HouseRentRelationDao houseRentRelationDao) {
+	private final LoginService loginService;
+
+	public UserService(UserDao userDao, OwnerDao ownerDao, RenterDao renterDao, NoticeDao noticeDao, HouseDao houseDao, HouseRentRelationDao houseRentRelationDao, LoginService loginService) {
 		this.userDao = userDao;
 		this.ownerDao = ownerDao;
 		this.renterDao = renterDao;
 		this.noticeDao = noticeDao;
 		this.houseDao = houseDao;
 		this.houseRentRelationDao = houseRentRelationDao;
+		this.loginService = loginService;
 	}
 
 	public User getUserByPhone(String phone){
@@ -179,9 +178,10 @@ public class UserService {
     public void deleteUserForce(Integer userId){
 		//强制删除用户信息，仅用户无租房或无被租房允许进行删除
 		//1. 删除 user 表中用户信息
-		//2. 删除 owner，renter 表中身份信息
-		//3. 删除名下房产 house 信息
-		//4. 删除通知该用户信息
+		//TODO 2. 删除 redis 缓存中的用户登录信息
+		//3. 删除 owner，renter 表中身份信息
+		//4. 删除名下房产 house 信息
+		//5. 删除通知该用户信息
 		ImmutableList<Integer> ids = ImmutableList.of(userId);
 		try{
 			userDao.delete(ids);
@@ -193,4 +193,17 @@ public class UserService {
 			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
 		}
 	}
+
+	@Transactional
+    public void register(User user) {
+		try{
+			Integer insert = userDao.insert(user);
+			if (insert < 1){
+				throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "用户注册失败");
+			}
+		} catch (Exception e){
+			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, "用户注册失败");
+		}
+		loginService.doLogin(ConvertUtil.convert(user));
+    }
 }

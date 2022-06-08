@@ -22,45 +22,14 @@ public class UserController {
 
 	private final UserService userService;
 
-	private final LoginService loginService;
-
-	public UserController(UserService userService, LoginService loginService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
-		this.loginService = loginService;
 	}
 
-	@RequestMapping(value = "/doLogin",method = RequestMethod.POST)
-	public Result login(@Validated @RequestBody LoginUser loginUser) {
-//		Map<String,Object> map = new HashMap<>();
-//		User user = userService.login(loginUser.getAccount(),loginUser.getPassword());
-//		//登录失败，不存在该用户
-//		if(user == null){
-//			map.put("flag",false);
-//			return map;
-//		}
-//		//生成令牌
-//		JwtUtil jwtUtil = new JwtUtil();
-//		String token = null;
-//		if(UserTypeEnum.Admin.getCode().equals(user.getType())){
-//			map.put("systemRole","admin");
-//			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"admin");
-//
-//		}else {
-//			map.put("systemRole","user");
-//			token = jwtUtil.createJWT(String.valueOf(user.getId()),user.getUsername(),"user");
-//		}
-//		map.put("userInfo",user);
-//		map.put("token",token);
-//		map.put("flag",true);
-//		return map;
-		loginService.login(loginUser);
-		return Result.success("登录成功");
-	}
-
-	@RequestMapping("/doLogout")
-	public Result logout(){
-		loginService.logout();
-		return Result.success("注销成功");
+	@PostMapping(value = "/register")
+	public Result register(@Validated({UserInsertValidate.class}) @RequestBody User user){
+		userService.register(user);
+		return Result.success("用户 " + user.getUsername() + " 注册成功！");
 	}
 
 	@RequestMapping(value = "/select",method = RequestMethod.GET)
