@@ -1,11 +1,16 @@
 package com.house.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.house.dao.OwnerDao;
 import com.house.enums.ExceptionEnum;
 import com.house.exception.OperationException;
 import com.house.pojo.Owner;
+import com.house.utils.UserUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @version 房主操作服务
@@ -14,20 +19,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class HouseOwnerService {
 
+    private final UserUtil userUtil;
+
     private final OwnerDao ownerDao;
 
-    public HouseOwnerService(OwnerDao ownerDao) {
+    public HouseOwnerService(OwnerDao ownerDao, UserUtil userUtil) {
         this.ownerDao = ownerDao;
+        this.userUtil = userUtil;
     }
 
     public void addOwner(Owner owner){
-        try{
-            Integer insert = ownerDao.insert(owner);
-            if (insert < 1){
-                throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
-            }
-        } catch (Exception e){
-            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, e.getMessage());
+        owner.setOwnerId(userUtil.getUserInfo().getId());
+        Integer insert = ownerDao.insert(owner);
+        if (insert < 1){
+            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION);
         }
     }
 
@@ -51,5 +56,11 @@ public class HouseOwnerService {
         } catch (Exception e){
             throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, e.getMessage());
         }
+    }
+
+    public Owner getByOwnerId(Integer ownerId) {
+        List<Owner> ownerList =
+                ownerDao.select(ImmutableMap.of("ownerId", ownerId));
+        return ownerList.get(0);
     }
 }

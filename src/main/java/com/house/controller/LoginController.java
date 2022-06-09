@@ -3,16 +3,14 @@ package com.house.controller;
 import com.house.common.Result;
 import com.house.dto.LoginUser;
 import com.house.service.LoginService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @version 用户登录接口
  * @since 2022/5/23
  */
 @RestController
+@CrossOrigin
 public class LoginController {
 
     private final LoginService loginService;

@@ -1,5 +1,6 @@
 package com.house.service;
 
+import com.google.common.collect.ImmutableMap;
 import com.house.common.Page;
 import com.house.dao.HouseDao;
 import com.house.dao.HouseViewDao;
@@ -100,4 +101,8 @@ public class HouseService {
     }
 
 
+    public House getHouseById(Integer houseId) {
+        List<House> houses = houseDao.select(ImmutableMap.of("id", houseId));
+        return houses.get(0);
+    }
 }

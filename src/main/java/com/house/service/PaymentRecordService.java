@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.house.common.Page;
 import com.house.dao.PaymentRecordDao;
 import com.house.enums.ExceptionEnum;
+import com.house.enums.PaymentStatusEnum;
 import com.house.exception.OperationException;
 import com.house.pojo.PaymentRecord;
 import com.house.utils.PageUtil;
@@ -19,14 +20,20 @@ import java.util.Map;
 @Service
 public class PaymentRecordService {
 
-    @Autowired
-    private PaymentRecordDao paymentRecordDao;
+    private final PaymentRecordDao paymentRecordDao;
+
+    private final NoticeService noticeService;
+
+    public PaymentRecordService(PaymentRecordDao paymentRecordDao, NoticeService noticeService) {
+        this.paymentRecordDao = paymentRecordDao;
+        this.noticeService = noticeService;
+    }
 
     /**
      * 查询缴费记录
      **/
     @Transactional
-    public Page findPaymentRecordListByPage(Map<String, Object> params) {
+    public Page<PaymentRecord> findPaymentRecordListByPage(Map<String, Object> params) {
         Integer totalCount = paymentRecordDao.count(params);
         PageUtil.addPageParams(params);
         return new Page(paymentRecordDao.select(params), totalCount,
@@ -92,4 +99,21 @@ public class PaymentRecordService {
         return paymentRecordDao.select(ImmutableMap.of("paymentRecordId", paymentRecordId)).get(0);
     }
 
+    /**
+     * 缴费
+     **/
+    @Transactional
+    public void pay(Integer paymentRecordId) {
+        List<PaymentRecord> paymentRecords = paymentRecordDao.select(ImmutableMap.of("id", paymentRecordId));
+        PaymentRecord oldRecord = paymentRecords.get(0);
+        if (PaymentStatusEnum.Payed.getCode().equals(oldRecord.getStatus())){
+            throw new OperationException(ExceptionEnum.PAYMENT_RECORD_PAYED);
+        }
+        PaymentRecord newRecord = new PaymentRecord();
+        newRecord.setId(paymentRecordId);
+        newRecord.setStatus(PaymentStatusEnum.Payed.getCode());
+        paymentRecordDao.update(newRecord);
+        Integer renterId = oldRecord.getRenterId();
+        noticeService.deleteByNoticeIds(noticeService.getNoticeIdsByRenterId(renterId));
+    }
 }
