@@ -16,8 +16,6 @@ import java.sql.Date;
  * @version 缴费记录信息实体类
  * @since 2022/5/9
  **/
-@AllArgsConstructor
-@NoArgsConstructor
 public class PaymentRecord {
     /**
      * 缴费记录 ID
@@ -68,6 +66,21 @@ public class PaymentRecord {
      * 其他信息
      **/
     private String info;
+
+    public PaymentRecord(@NotNull(message = "缴费记录 ID 不为空", groups = {PaymentRecordUpdateValidate.class}) Integer id, @NotNull(message = "房屋 ID 不为空", groups = {PaymentRecordInsertValidate.class}) Integer houseId, @NotNull(message = "房主 ID 不为空", groups = {PaymentRecordInsertValidate.class}) Integer ownerId, @NotNull(message = "租户 ID 不为空", groups = {PaymentRecordInsertValidate.class}) Integer renterId, @NotNull(message = "房屋租赁费用不为空", groups = {PaymentRecordInsertValidate.class}) BigDecimal housePrice, BigDecimal platformPrice, Date payDate, Integer status, String info) {
+        this.id = id;
+        this.houseId = houseId;
+        this.ownerId = ownerId;
+        this.renterId = renterId;
+        this.housePrice = housePrice;
+        this.platformPrice = platformPrice;
+        this.payDate = payDate;
+        this.status = status;
+        this.info = info;
+    }
+
+    public PaymentRecord() {
+    }
 
     public Integer getId() {
         return id;

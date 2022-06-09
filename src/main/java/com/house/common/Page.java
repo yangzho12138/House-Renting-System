@@ -83,7 +83,7 @@ public class Page<T> implements Serializable {
         this.currPage = currPage;
     }
 
-    public List<?> getList() {
+    public List<T> getList() {
         return list;
     }
 

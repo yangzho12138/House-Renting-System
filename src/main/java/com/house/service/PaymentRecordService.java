@@ -36,7 +36,7 @@ public class PaymentRecordService {
     public Page<PaymentRecord> findPaymentRecordListByPage(Map<String, Object> params) {
         Integer totalCount = paymentRecordDao.count(params);
         PageUtil.addPageParams(params);
-        return new Page(paymentRecordDao.select(params), totalCount,
+        return new Page<PaymentRecord>(paymentRecordDao.select(params), totalCount,
                 (Integer) params.get("pageSize"),
                 (Integer) params.get("currPage"));
     }

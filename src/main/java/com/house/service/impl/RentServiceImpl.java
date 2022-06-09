@@ -93,12 +93,19 @@ public class RentServiceImpl implements RentService {
         PaymentRecord record = (PaymentRecord) paymentRecords.getList().get(0);
         paymentRecordService.deletePaymentRecord(record.getId());
         //2. 删除 house_rent 租房记录
-        houseRentRelationDao.delete(ImmutableMap.of("houseId", houseId,
-                                                        "renterId", renterId));
+        deleteHouseRentRelation(houseId, renterId);
         //3. house 状态更新为未出租
         House house = new House();
         house.setId(houseId);
         house.setStatus(HouseStatusEnum.Not_Rented.getCode());
         houseService.updateHouse(house);
+    }
+
+    public void deleteHouseRentRelation(Integer houseId, Integer renterId){
+        Integer delete = houseRentRelationDao.delete(ImmutableMap.of("houseId", houseId,
+                                                                        "renterId", renterId));
+        if (delete < 1){
+            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "插入数据失败");
+        }
     }
 }

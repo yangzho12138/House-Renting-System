@@ -27,16 +27,16 @@ public class HouseService {
         this.houseViewDao = houseViewDao;
     }
 
-    public Page findHouseListByPage(Map<String, Object> params) {
+    public Page<House> findHouseListByPage(Map<String, Object> params) {
         Integer totalCount = houseDao.count(params);
         List<House> houses =  houseDao.select(PageUtil.addPageParams(params));
-        return new Page(houses, totalCount, (Integer) params.get("pageSize"), (Integer) params.get("currPage"));
+        return new Page<House>(houses, totalCount, (Integer) params.get("pageSize"), (Integer) params.get("currPage"));
     }
 
-    public Page findHouseViewListPage(Map<String, Object> params){
+    public Page<HouseView> findHouseViewListPage(Map<String, Object> params){
         Integer totalCount = houseViewDao.count(params);
         List<HouseView> houseViews = houseViewDao.select(PageUtil.addPageParams(params));
-        return new Page(houseViews,totalCount,(Integer) params.get("pageSize"), (Integer) params.get("currPage"));
+        return new Page<HouseView>(houseViews,totalCount,(Integer) params.get("pageSize"), (Integer) params.get("currPage"));
     }
 
     public List<House> findHouseListByCondition(Map<String, Object> params){

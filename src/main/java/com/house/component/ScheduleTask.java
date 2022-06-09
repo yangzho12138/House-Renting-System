@@ -5,15 +5,12 @@ import com.house.common.Page;
 import com.house.enums.HouseStatusEnum;
 import com.house.enums.PaymentStatusEnum;
 import com.house.pojo.House;
-import com.house.pojo.HouseRentRelation;
 import com.house.pojo.PaymentRecord;
 import com.house.pojo.Renter;
-import com.house.service.HouseService;
-import com.house.service.PaymentRecordService;
-import com.house.service.RenterService;
-import com.house.service.UserService;
+import com.house.service.*;
 import com.house.utils.EmailSendUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -23,17 +20,22 @@ import java.util.*;
 @Component
 public class ScheduleTask {
 
-    @Autowired
-    PaymentRecordService paymentRecordService;
+    private static final Logger logger = LoggerFactory.getLogger(ScheduleTask.class);
 
-    @Autowired
-    RenterService renterService;
+    private final PaymentRecordService paymentRecordService;
 
-    @Autowired
-    HouseService houseService;
+    private final RenterService renterService;
 
-    @Autowired
-    UserService userService;
+    private final HouseService houseService;
+
+    private final RentService rentService;
+
+    public ScheduleTask(HouseService houseService, PaymentRecordService paymentRecordService, RenterService renterService, RentService rentService) {
+        this.houseService = houseService;
+        this.paymentRecordService = paymentRecordService;
+        this.renterService = renterService;
+        this.rentService = rentService;
+    }
 
     // 每天中午12点发送邮件通知用户缴费
     @Scheduled(cron = "0 0 12 * * ?")
@@ -46,14 +48,18 @@ public class ScheduleTask {
         params.put("dateLimit",dateLimit);
         params.put("dateBound",dateBound);
         params.put("status", PaymentStatusEnum.Owe.getCode());
-        Page  p = paymentRecordService.findPaymentRecordListByPage(params);
-        List<?> list = p.getList();
-        for(int i = 0; i < list.size(); i++){
-            Object[] obj = (Object[]) list.get(i);
-            Integer renterId = (Integer) obj[3];
-            Renter renter = renterService.getRenterByRenterId(renterId);
-            EmailSendUtil.send(renter.getEmail());
-        }
+        Page<PaymentRecord>  p = paymentRecordService.findPaymentRecordListByPage(params);
+        List<PaymentRecord> list = p.getList();
+        list.forEach(paymentRecord -> {
+            Renter renter = renterService.getRenterByRenterId(paymentRecord.getRenterId());
+            Integer renterId = renter.getRenterId();
+            try {
+                EmailSendUtil.send(renter.getEmail());
+            } catch (MessagingException e) {
+                logger.error("发送至 " + renterId + " 租户的信息发送失败，请稍后重试! 原因是：" + e.getMessage());
+            }
+
+        });
     }
 
     // 每天凌晨清除3天内未付款的订单
@@ -65,28 +71,18 @@ public class ScheduleTask {
         java.sql.Date dateBound= new java.sql.Date(calendar.getTimeInMillis());
         params.put("dateBound",dateBound);
         params.put("status", PaymentStatusEnum.Owe.getCode());
-        Page  p = paymentRecordService.findPaymentRecordListByPage(params);
-        List<?> list = p.getList();
-        List<PaymentRecord> target = new ArrayList<>();
-        for(int i = 0; i < list.size(); i++){
-            Object[] obj = (Object[]) list.get(i);
-            Integer paymentId = (Integer) obj[0];
-            Integer houseId = (Integer) obj[1];
-            Integer renterId = (Integer) obj[3];
-            // 删除交易记录
-            paymentRecordService.deletePaymentRecord(paymentId);
+        Page<PaymentRecord>  p = paymentRecordService.findPaymentRecordListByPage(params);
+        List<PaymentRecord> list = p.getList();
+        list.forEach(paymentRecord -> {
+            paymentRecordService.deletePaymentRecord(paymentRecord.getId());
             // 更新房屋信息
             House house = new House();
-            house.setId(houseId);
+            house.setId(paymentRecord.getHouseId());
             house.setStatus(HouseStatusEnum.Not_Rented.getCode());
             houseService.updateHouse(house);
-            // 删除HouseRentRelation
-            Map<String,Object> map = new HashMap<>();
-            map.put("houseId",houseId);
-            map.put("renterId",renterId);
-            //userService.deleteHouseRentRelation(map);
-        }
-
+            // 删除租赁合同
+            rentService.deleteHouseRentRelation(paymentRecord.getHouseId(), paymentRecord.getRenterId());
+        });
     }
 
 }
