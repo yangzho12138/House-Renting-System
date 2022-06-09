@@ -5,11 +5,9 @@ import com.house.pojo.PaymentRecord;
 import com.house.service.PaymentRecordService;
 import com.house.validate.PaymentRecordInsertValidate;
 import com.house.validate.PaymentRecordUpdateValidate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController

@@ -2,9 +2,10 @@ package com.house.service.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.house.dao.NoticeDao;
+import com.house.enums.ExceptionEnum;
+import com.house.exception.OperationException;
 import com.house.pojo.Notice;
 import com.house.service.NoticeService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,5 +33,13 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     public void deleteByNoticeIds(List<Integer> noticeIds) {
         noticeDao.delete(noticeIds);
+    }
+
+    @Override
+    public void updateByUserId(Notice notice) {
+        Integer update = noticeDao.updateByUserId(notice);
+        if (update < 1){
+            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "更新消息通知失败");
+        }
     }
 }

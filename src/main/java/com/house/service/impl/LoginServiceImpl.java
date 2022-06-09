@@ -1,5 +1,6 @@
 package com.house.service.impl;
 
+import com.house.common.Constant;
 import com.house.common.Result;
 import com.house.component.BCryptPasswordEncoderUtil;
 import com.house.component.RedisCache;
@@ -64,8 +65,8 @@ public class LoginServiceImpl implements LoginService {
         String phone = authUser.getPhone();
         String token = JwtUtil.createJWT(phone);
 
-        redisCache.setCacheObject("Token_" + phone, token);
-        redisCache.setCacheObject("UserDetails_" + phone, authUser);
+        redisCache.setCacheObject(Constant.REDIS_TOKEN_PREFIX + phone, token);
+        redisCache.setCacheObject(Constant.REDIS_USER_INFO_PREFIX + phone, authUser);
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
@@ -80,8 +81,8 @@ public class LoginServiceImpl implements LoginService {
         AuthUser authUser = (AuthUser) authentication.getPrincipal();
         String phone = authUser.getPhone();
 
-        redisCache.deleteObject("Token_" + phone);
-        redisCache.deleteObject("UserDetails_" + phone);
+        redisCache.deleteObject(Constant.REDIS_TOKEN_PREFIX + phone);
+        redisCache.deleteObject(Constant.REDIS_USER_INFO_PREFIX + phone);
         SecurityContextHolder.clearContext();
 
         return Result.success("登出成功");

@@ -1,5 +1,6 @@
 package com.house.service.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.house.dao.RenterDao;
 import com.house.enums.ExceptionEnum;
@@ -43,6 +44,22 @@ public class RenterServiceImpl implements RenterService {
         Integer insert = renterDao.insert(renter);
         if (insert < 1){
             throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "租户信息登记失败");
+        }
+    }
+
+    @Override
+    public void updateRenter(Renter renter) {
+        Integer update = renterDao.update(renter);
+        if (update < 1){
+            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "更新租戶 " + renter.getRenterId()+ " 信息失敗");
+        }
+    }
+
+    @Override
+    public void deleteRenter(Integer userId) {
+        Integer delete = renterDao.delete(ImmutableList.of(userId));
+        if (delete < 1){
+            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "删除租户信息失败");
         }
     }
 }

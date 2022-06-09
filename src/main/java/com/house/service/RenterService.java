@@ -7,4 +7,8 @@ public interface RenterService {
     Renter getRenterByRenterId(Integer renterId);
 
     void register(Renter renter);
+
+    void updateRenter(Renter renter);
+
+    void deleteRenter(Integer userId);
 }

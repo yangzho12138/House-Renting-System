@@ -19,5 +19,5 @@ public interface NoticeDao {
 
     Integer delete(List<Integer> noticeIds);
 
-    void updateByUserId(Notice notice);
+    Integer updateByUserId(Notice notice);
 }

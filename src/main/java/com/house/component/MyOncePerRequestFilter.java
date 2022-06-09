@@ -3,6 +3,7 @@ package com.house.component;
 
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
+import com.house.common.Constant;
 import com.house.common.Result;
 import com.house.dto.AuthUser;
 import com.house.utils.JwtUtil;
@@ -60,7 +61,7 @@ public class MyOncePerRequestFilter extends OncePerRequestFilter {
                 WriteJSON(request,response,Result.error("非法Token，请重新登陆"));
                 return;
             }
-            String redisToken = redisCache.getCacheObject("Token_" + phone);
+            String redisToken = redisCache.getCacheObject(Constant.REDIS_TOKEN_PREFIX + phone);
             logger.info("MyOncePerRequestFilter-redisToken = " + redisToken);
             if (StrUtil.isEmpty(redisToken)) {
                 //输出JSON
@@ -70,7 +71,7 @@ public class MyOncePerRequestFilter extends OncePerRequestFilter {
 
             //对比前端发送请求携带的的token是否与redis中存储的一致
             if (redisToken.equals(token)) {
-                AuthUser authUser = redisCache.getCacheObject("UserDetails_" + phone);
+                AuthUser authUser = redisCache.getCacheObject(Constant.REDIS_USER_INFO_PREFIX + phone);
                 logger.info("MyOncePerRequestFilter-authUser = " + authUser);
                 if (Objects.isNull(authUser)) {
                     WriteJSON(request,response,Result.error("用户未登录"));

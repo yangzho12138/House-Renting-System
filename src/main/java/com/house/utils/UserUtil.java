@@ -1,5 +1,6 @@
 package com.house.utils;
 
+import com.house.common.Constant;
 import com.house.component.RedisCache;
 import com.house.dto.AuthUser;
 import com.house.enums.ExceptionEnum;
@@ -34,8 +35,7 @@ public class UserUtil {
      **/
     public User getUserInfo(){
         String phone =  (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //TODO Redis 的键为 Constant 常量
-        AuthUser authUser = redisCache.getCacheObject("UserDetails_" + phone);
+        AuthUser authUser = redisCache.getCacheObject(Constant.REDIS_USER_INFO_PREFIX + phone);
         if (authUser == null){
             logger.error(ExceptionEnum.REDIS_OPERATE_ERROR.getMessage());
             return userService.getUserByPhone(phone);

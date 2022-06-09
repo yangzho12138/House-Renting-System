@@ -1,5 +1,7 @@
 package com.house.service;
 
+import com.house.pojo.Notice;
+
 import java.util.List;
 
 /**
@@ -10,4 +12,6 @@ public interface NoticeService {
     List<Integer> getNoticeIdsByRenterId(Integer userId);
 
     void deleteByNoticeIds(List<Integer> noticeIds);
+
+    void updateByUserId(Notice notice);
 }

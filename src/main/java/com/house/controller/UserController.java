@@ -1,12 +1,9 @@
 package com.house.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import com.house.dto.LoginUser;
 import com.house.common.Result;
 import com.house.pojo.User;
-import com.house.service.LoginService;
 import com.house.service.UserService;
 import com.house.validate.UserInsertValidate;
 import com.house.validate.UserUpdateValidate;

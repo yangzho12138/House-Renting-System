@@ -15,6 +15,9 @@ import com.house.utils.UserUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @version 处理租房的相关操作
  * @since 2022/5/26
@@ -107,5 +110,10 @@ public class RentServiceImpl implements RentService {
         if (delete < 1){
             throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "插入数据失败");
         }
+    }
+
+    @Override
+    public List<HouseRentRelation> getRentRelationByRenterId(Map<String, Object> params) {
+        return houseRentRelationDao.select(params);
     }
 }
