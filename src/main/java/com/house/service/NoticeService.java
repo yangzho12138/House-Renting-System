@@ -2,6 +2,7 @@ package com.house.service;
 
 import com.house.pojo.Notice;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 /**
@@ -14,4 +15,6 @@ public interface NoticeService {
     void deleteByNoticeIds(List<Integer> noticeIds);
 
     void updateByUserId(Notice notice);
+
+    void sendEmail(String email) throws MessagingException;
 }

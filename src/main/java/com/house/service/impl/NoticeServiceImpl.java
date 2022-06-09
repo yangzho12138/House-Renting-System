@@ -6,8 +6,10 @@ import com.house.enums.ExceptionEnum;
 import com.house.exception.OperationException;
 import com.house.pojo.Notice;
 import com.house.service.NoticeService;
+import com.house.utils.EmailSendUtil;
 import org.springframework.stereotype.Service;
 
+import javax.mail.MessagingException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,5 +43,10 @@ public class NoticeServiceImpl implements NoticeService {
         if (update < 1){
             throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "更新消息通知失败");
         }
+    }
+
+    @Override
+    public void sendEmail(String email) throws MessagingException {
+        EmailSendUtil.send(email);
     }
 }

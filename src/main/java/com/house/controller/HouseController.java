@@ -58,17 +58,17 @@ public class HouseController {
     }
 
 
-    // 根据houseid,renterid，把所有记录搜出来
+    // 根据houseId,renterId，把所有记录搜出来
     @RequestMapping(value="/viewer/select",method = RequestMethod.GET)
     public Result getHouseViewList(@RequestParam("params") Map<String, Object> params){
         Page<HouseView> page = houseService.findHouseViewListPage(params);
         return Result.success("查找租房记录成功", page);
     }
 
-    // 插入 houseid,renterid,detail,star,date
+    // 插入 houseId,renterId,detail,star,date
     @RequestMapping(value="/viewer/insert",method = RequestMethod.POST)
     public Result addHouseView(@Validated @RequestBody HouseView houseView){
         houseService.addHouseView(houseView);
-        return Result.success("添加租房信息信息成功");
+        return Result.success("添加看房记录信息成功");
     }
 }
