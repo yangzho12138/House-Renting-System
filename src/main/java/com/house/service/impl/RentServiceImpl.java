@@ -1,7 +1,9 @@
 package com.house.service.impl;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.house.common.Constant;
+import com.house.common.Page;
 import com.house.dao.HouseRentRelationDao;
 import com.house.enums.ExceptionEnum;
 import com.house.enums.HouseStatusEnum;
@@ -12,8 +14,6 @@ import com.house.service.*;
 import com.house.utils.UserUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.Date;
 
 /**
  * @version 处理租房的相关操作
@@ -79,6 +79,26 @@ public class RentServiceImpl implements RentService {
         House newHouse = new House();
         newHouse.setId(houseId);
         newHouse.setStatus(HouseStatusEnum.Rented.getCode());
+        houseService.updateHouse(house);
+    }
+
+    @Override
+    @Transactional
+    public void forceWithdraw(Integer houseId) {
+        Integer renterId = userUtil.getUserInfo().getId();
+        //租户强制退租
+        //1. 租户未缴费，直接删除 paymentRecord 记录
+        Page<PaymentRecord> paymentRecords = paymentRecordService.findPaymentRecordListByPage(ImmutableMap.of("houseId", houseId,
+                "renterId", renterId));
+        PaymentRecord record = (PaymentRecord) paymentRecords.getList().get(0);
+        paymentRecordService.deletePaymentRecord(record.getId());
+        //2. 删除 house_rent 租房记录
+        houseRentRelationDao.delete(ImmutableMap.of("houseId", houseId,
+                                                        "renterId", renterId));
+        //3. house 状态更新为未出租
+        House house = new House();
+        house.setId(houseId);
+        house.setStatus(HouseStatusEnum.Not_Rented.getCode());
         houseService.updateHouse(house);
     }
 }

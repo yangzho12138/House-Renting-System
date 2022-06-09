@@ -7,7 +7,7 @@ import java.util.List;
  * @version 查询返回的页数结果
  * @since 2022/5/10
  **/
-public class Page implements Serializable {
+public class Page<T> implements Serializable {
 
     private static final long serialVersionUID = 2923477771741710108L;
 
@@ -34,7 +34,7 @@ public class Page implements Serializable {
     /**
      * 列表数据
      **/
-    private List<?> list;
+    private List<T> list;
 
     /**
      * 分页
@@ -43,7 +43,7 @@ public class Page implements Serializable {
      * @param pageSize    每页记录数
      * @param currPage    当前页数
      */
-    public Page(List<?> list, int totalCount, int pageSize, int currPage) {
+    public Page(List<T> list, int totalCount, int pageSize, int currPage) {
         this.list = list;
         this.totalCount = totalCount;
         this.pageSize = pageSize;
@@ -87,7 +87,7 @@ public class Page implements Serializable {
         return list;
     }
 
-    public void setList(List<?> list) {
+    public void setList(List<T> list) {
         this.list = list;
     }
 }

@@ -33,7 +33,7 @@ public class PaymentRecordService {
      * 查询缴费记录
      **/
     @Transactional
-    public Page findPaymentRecordListByPage(Map<String, Object> params) {
+    public Page<PaymentRecord> findPaymentRecordListByPage(Map<String, Object> params) {
         Integer totalCount = paymentRecordDao.count(params);
         PageUtil.addPageParams(params);
         return new Page(paymentRecordDao.select(params), totalCount,

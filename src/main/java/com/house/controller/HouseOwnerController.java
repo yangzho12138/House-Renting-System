@@ -26,7 +26,7 @@ public class HouseOwnerController {
     /**
      * 登记为房主
      **/
-    @PostMapping(value = "/add")
+    @PostMapping(value = "/register")
     public Result addHouseOwner(@Validated({HouseOwnerInsertValidate.class})
                                     @RequestBody Owner owner){
         houseOwnerService.addOwner(owner);
