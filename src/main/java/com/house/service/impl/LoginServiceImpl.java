@@ -8,8 +8,10 @@ import com.house.dto.AuthUser;
 import com.house.dto.LoginUser;
 import com.house.enums.ExceptionEnum;
 import com.house.exception.OperationException;
+import com.house.pojo.User;
 import com.house.service.LoginService;
 import com.house.service.UserService;
+import com.house.utils.ConvertUtil;
 import com.house.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +33,7 @@ import java.util.Objects;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-    @Value("${jwt.tokenHead}")
+    @Value("${jwt.header}")
     private String tokenHead;
 
     private final UserService userService;
@@ -86,5 +89,12 @@ public class LoginServiceImpl implements LoginService {
         SecurityContextHolder.clearContext();
 
         return Result.success("登出成功");
+    }
+
+    @Override
+    @Transactional
+    public void register(User user) {
+        userService.addUser(user);
+        doLogin(ConvertUtil.convert(user));
     }
 }

@@ -22,11 +22,8 @@ public class UserUtil {
 
     private final RedisCache redisCache;
 
-    private final UserService userService;
-
-    public UserUtil(RedisCache redisCache, UserService userService) {
+    public UserUtil(RedisCache redisCache) {
         this.redisCache = redisCache;
-        this.userService = userService;
     }
 
     /**
@@ -36,10 +33,6 @@ public class UserUtil {
     public User getUserInfo(){
         String phone =  (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         AuthUser authUser = redisCache.getCacheObject(Constant.REDIS_USER_INFO_PREFIX + phone);
-        if (authUser == null){
-            logger.error(ExceptionEnum.REDIS_OPERATE_ERROR.getMessage());
-            return userService.getUserByPhone(phone);
-        }
         return authUser.getUser();
     }
 }

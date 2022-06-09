@@ -34,11 +34,11 @@ jwt:
 #redis配置
 redis:
   #服务器地址
-  host: 120.77.80.135
+  host: 49.235.119.209
   #端口
   port: 6379
   #redis密码
-  password: XXXXXX
+  password: 622820
   #超时时间
   timeout: 1209600000ms
   lettuce:

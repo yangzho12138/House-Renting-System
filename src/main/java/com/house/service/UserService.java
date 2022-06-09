@@ -21,6 +21,4 @@ public interface UserService {
     void deleteUser(Integer userId);
 
     void deleteUserForce(Integer userId);
-
-    void register(User user);
 }

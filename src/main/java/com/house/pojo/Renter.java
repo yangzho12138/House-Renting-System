@@ -1,10 +1,7 @@
 package com.house.pojo;
 
-import com.house.validate.RenterInsertValidate;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @version 租户信息实体类

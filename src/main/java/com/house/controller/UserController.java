@@ -3,6 +3,7 @@ package com.house.controller;
 import java.util.Map;
 import com.house.common.Result;
 import com.house.pojo.User;
+import com.house.service.LoginService;
 import com.house.service.UserService;
 import com.house.validate.UserInsertValidate;
 import com.house.validate.UserUpdateValidate;
@@ -18,13 +19,16 @@ public class UserController {
 
 	private final UserService userService;
 
-	public UserController(UserService userService) {
+	private final LoginService loginService;
+
+	public UserController(UserService userService, LoginService loginService) {
 		this.userService = userService;
+		this.loginService = loginService;
 	}
 
 	@PostMapping(value = "/register")
 	public Result register(@Validated({UserInsertValidate.class}) @RequestBody User user){
-		userService.register(user);
+		loginService.register(user);
 		return Result.success("用户 " + user.getUsername() + " 注册成功！");
 	}
 

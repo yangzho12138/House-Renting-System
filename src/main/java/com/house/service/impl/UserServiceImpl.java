@@ -20,7 +20,6 @@ import com.house.service.*;
 import com.house.utils.ConvertUtil;
 import com.house.utils.PageUtil;
 import com.house.vo.PasswordVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -41,18 +40,15 @@ public class UserServiceImpl implements UserService {
 
 	private final RentService rentService;
 
-	private final LoginService loginService;
-
 	private final RedisCache redisCache;
 
-	public UserServiceImpl(UserDao userDao, HouseOwnerService houseOwnerService, RenterService renterService, NoticeService noticeService, HouseService houseService, RentService rentService, LoginService loginService, RedisCache redisCache) {
+	public UserServiceImpl(UserDao userDao, HouseOwnerService houseOwnerService, RenterService renterService, NoticeService noticeService, HouseService houseService, RentService rentService, RedisCache redisCache) {
 		this.userDao = userDao;
 		this.houseOwnerService = houseOwnerService;
 		this.renterService = renterService;
 		this.noticeService = noticeService;
 		this.houseService = houseService;
 		this.rentService = rentService;
-		this.loginService = loginService;
 		this.redisCache = redisCache;
 	}
 
@@ -200,18 +196,4 @@ public class UserServiceImpl implements UserService {
 			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
 		}
 	}
-
-	@Override
-	@Transactional
-    public void register(User user) {
-		try{
-			Integer insert = userDao.insert(user);
-			if (insert < 1){
-				throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "用户注册失败");
-			}
-		} catch (Exception e){
-			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, "用户注册失败");
-		}
-		loginService.doLogin(ConvertUtil.convert(user));
-    }
 }
