@@ -93,8 +93,10 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public void register(User user) {
+    public Result register(User user) {
         userService.addUser(user);
-        doLogin(ConvertUtil.convert(user));
+        Result result = doLogin(ConvertUtil.convert(user));
+        result.setMessage("注册成功，自动登录");
+        return result;
     }
 }

@@ -45,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //关闭 CSRF 防御
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/register", "/login", "/user/check_login").permitAll()
+                .antMatchers("/user/register", "/user/login", "/user/check_login").permitAll()
                 .antMatchers("/admin/*").hasAnyRole("ROLE_ADMIN")
                 .anyRequest().authenticated()
                 .and()

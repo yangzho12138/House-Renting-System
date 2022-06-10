@@ -12,5 +12,5 @@ public interface LoginService {
 
     Result doLogout();
 
-    void register(User user);
+    Result register(User user);
 }

@@ -28,8 +28,7 @@ public class UserController {
 
 	@PostMapping(value = "/register")
 	public Result register(@Validated({UserInsertValidate.class}) @RequestBody User user){
-		loginService.register(user);
-		return Result.success("用户 " + user.getUsername() + " 注册成功！");
+		return loginService.register(user);
 	}
 
 	@RequestMapping(value = "/select",method = RequestMethod.GET)
