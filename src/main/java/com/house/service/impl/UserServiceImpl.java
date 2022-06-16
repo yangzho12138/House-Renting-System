@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 
 import com.google.common.collect.*;
-import com.house.common.Constant;
 import com.house.common.Page;
+import com.house.component.BCryptPasswordEncoderUtil;
 import com.house.component.RedisCache;
 import com.house.dao.UserDao;
 import com.house.enums.ExceptionEnum;
@@ -20,6 +20,7 @@ import com.house.service.*;
 import com.house.utils.ConvertUtil;
 import com.house.utils.PageUtil;
 import com.house.vo.PasswordVO;
+import com.house.vo.UserVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -32,6 +33,8 @@ public class UserServiceImpl implements UserService {
 
 	private final HouseOwnerService houseOwnerService;
 
+	private final BCryptPasswordEncoderUtil bCryptPasswordEncoderUtil;
+
 	private final RenterService renterService;
 
 	private final NoticeService noticeService;
@@ -42,14 +45,18 @@ public class UserServiceImpl implements UserService {
 
 	private final RedisCache redisCache;
 
-	public UserServiceImpl(UserDao userDao, HouseOwnerService houseOwnerService, RenterService renterService, NoticeService noticeService, HouseService houseService, RentService rentService, RedisCache redisCache) {
+	private final PaymentRecordService paymentRecordService;
+
+	public UserServiceImpl(UserDao userDao, HouseOwnerService houseOwnerService, BCryptPasswordEncoderUtil bCryptPasswordEncoderUtil, RenterService renterService, NoticeService noticeService, HouseService houseService, RentService rentService, RedisCache redisCache, PaymentRecordService paymentRecordService) {
 		this.userDao = userDao;
 		this.houseOwnerService = houseOwnerService;
+		this.bCryptPasswordEncoderUtil = bCryptPasswordEncoderUtil;
 		this.renterService = renterService;
 		this.noticeService = noticeService;
 		this.houseService = houseService;
 		this.rentService = rentService;
 		this.redisCache = redisCache;
+		this.paymentRecordService = paymentRecordService;
 	}
 
 
@@ -63,10 +70,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Page<User> findUserByPage(Map<String, Object> params) {
+	public Page<UserVO> findUserByPage(Map<String, Object> params) {
 		Integer totalCount = userDao.count(params);
 		PageUtil.addPageParams(params);
-		return new Page<User>(userDao.select(params), totalCount,
+		List<User> users = userDao.select(params);
+		List<UserVO> userVOS = users.stream().map(ConvertUtil::convertToVo).collect(Collectors.toList());
+		return new Page<UserVO>(userVOS, totalCount,
 				(Integer) params.get("pageSize"),
 				(Integer) params.get("currPage"));
 	}
@@ -74,14 +83,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void updatePassword(PasswordVO passwordVO){
 		Map<String, Object> params = new HashMap<>();
-		params.put("userId", passwordVO.getUserId());
-		params.put("password", passwordVO.getOldPassword());
+		params.put("phone", passwordVO.getPhone());
 		List<User> users = userDao.select(params);
 		if(users.size() < 1){
 			throw new OperationException(ExceptionEnum.USER_NOT_FOUND_OR_PASSWORD_WRONG);
 		}
 		User user = users.get(0);
-		user.setPassword(passwordVO.getNewPassword());
+		if (!bCryptPasswordEncoderUtil.matches(passwordVO.getOldPassword(), user.getPassword())){
+			throw new OperationException(ExceptionEnum.PASSWORD_WRONG_EXCEPTION, "登录密码出错，请重新输入");
+		}
+		user.setPassword(bCryptPasswordEncoderUtil.encode(passwordVO.getNewPassword()));
 		try{
 			int effectedNum = userDao.update(user);
 			if(effectedNum < 1){
@@ -111,6 +122,7 @@ public class UserServiceImpl implements UserService {
         if(user == null || user.getId() == null){
             throw new OperationException(ExceptionEnum.PARAMETER_NULL_EXCEPTION);
         }
+
         boolean flag = false;
         String oldPhone = "";
 		if (!StringUtils.isEmpty(user.getPhone())){
@@ -130,7 +142,7 @@ public class UserServiceImpl implements UserService {
 				Owner owner = new Owner();
 				owner.setOwnerId(user.getId());
 				owner.setPhone(user.getPhone());
-				houseOwnerService.updateOwner(owner);
+				houseOwnerService.updateOwnerByAdmin(owner);
 
 				Renter renter = new Renter();
 				renter.setRenterId(user.getId());
@@ -171,7 +183,6 @@ public class UserServiceImpl implements UserService {
 		if (count > 0){
 			throw new OperationException(ExceptionEnum.RENTED_HOUSE_NOT_OUT_DATE);
 		}
-        deleteUserForce(userId);
     }
 
     @Override
@@ -180,8 +191,6 @@ public class UserServiceImpl implements UserService {
 		//强制删除用户信息，仅用户无租房或无被租房允许进行删除
 		//1. 删除 user 表中用户信息
 		User user = userDao.select(ImmutableMap.of("id", userId)).get(0);
-		redisCache.deleteObject(Constant.REDIS_TOKEN_PREFIX + user.getPhone());
-		redisCache.deleteObject(Constant.REDIS_USER_INFO_PREFIX + user.getPhone());
 		//3. 删除 owner，renter 表中身份信息
 		//4. 删除名下房产 house 信息
 		//5. 删除通知该用户信息
@@ -190,8 +199,12 @@ public class UserServiceImpl implements UserService {
 			userDao.delete(ids);
 			houseOwnerService.deleteOwner(userId);
 			renterService.deleteRenter(userId);
+			rentService.deleteHouseRentRelation(userId);
 			houseService.deleteHouses(houseService.findHouseListByCondition(ImmutableMap.of("ownerId", userId))
 					.stream().map(House::getId).collect(Collectors.toList()));
+			paymentRecordService.findPaymentRecords(userId).forEach(paymentRecord -> {
+				paymentRecordService.deletePaymentRecord(paymentRecord.getId());
+			});
 		}catch (Exception e){
 			throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION);
 		}

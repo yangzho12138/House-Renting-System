@@ -14,5 +14,7 @@ public interface RentService {
 
     void deleteHouseRentRelation(Integer houseId, Integer renterId);
 
+    void deleteHouseRentRelation(Integer renterId);
+
     List<HouseRentRelation> getRentRelationByRenterId(Map<String, Object> params);
 }

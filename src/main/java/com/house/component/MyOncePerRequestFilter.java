@@ -2,10 +2,14 @@ package com.house.component;
 
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONString;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.house.common.Constant;
 import com.house.common.Result;
 import com.house.dto.AuthUser;
+import com.house.pojo.User;
 import com.house.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
@@ -13,6 +17,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -23,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -71,12 +78,17 @@ public class MyOncePerRequestFilter extends OncePerRequestFilter {
 
             //对比前端发送请求携带的的token是否与redis中存储的一致
             if (redisToken.equals(token)) {
-                AuthUser authUser = redisCache.getCacheObject(Constant.REDIS_USER_INFO_PREFIX + phone);
-                logger.info("MyOncePerRequestFilter-authUser = " + authUser);
-                if (Objects.isNull(authUser)) {
+                JSONObject authUserJson = redisCache.getCacheObject(Constant.REDIS_USER_INFO_PREFIX + phone);
+                User user = authUserJson.getObject("user", User.class);
+                List<SimpleGrantedAuthority> authorities = authUserJson.getObject("authorities", new TypeReference<List<SimpleGrantedAuthority>>(){});
+                if (Objects.isNull(user) || Objects.isNull(authorities)){
                     WriteJSON(request,response,Result.error("用户未登录"));
                     return;
                 }
+                AuthUser authUser = new AuthUser(user, authorities);
+
+                logger.info("MyOncePerRequestFilter-authUser = " + authUser);
+
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authUser, null, authUser.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }

@@ -21,7 +21,7 @@ public abstract class JSONAuthentication {
 
         //跨域设置
         response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Method", "POST,GET");
+        response.setHeader("Access-Control-Allow-Method", "POST,GET,UPDATE,DELETE");
         //输出JSON
         PrintWriter out = response.getWriter();
         out.write(JSON.toJSONString(obj));

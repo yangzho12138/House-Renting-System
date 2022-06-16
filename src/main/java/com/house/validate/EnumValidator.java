@@ -46,7 +46,7 @@ public class EnumValidator implements ConstraintValidator<EnumValid, Object> {
         try{
             Method method;
             if (DEFAULT_FIELD.equals(field)){
-                method = clazz.getMethod(field);
+                method = clazz.getMethod("get" + upperCaseChar(field));
             } else {
                 String getMethodName = "get" + upperCaseChar(this.field);
                 method = clazz.getMethod(getMethodName);
@@ -65,6 +65,8 @@ public class EnumValidator implements ConstraintValidator<EnumValid, Object> {
     }
 
     private static String upperCaseChar(String str) {
-        return str.toUpperCase();
+        char[] charArray = str.toCharArray();
+        charArray[0] = Character.toUpperCase(charArray[0]);
+        return new String(charArray);
     }
 }

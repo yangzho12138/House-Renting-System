@@ -40,13 +40,13 @@ public class PaymentRecordController {
     }
 
     @RequestMapping(value="/delete/{paymentRecordId}",method = RequestMethod.DELETE)
-    public Result deletePaymentRecord(@PathVariable("paymentRecordId")Integer paymentRecordId){
+    public Result deletePaymentRecord(@PathVariable("paymentRecordId") Integer paymentRecordId){
         paymentRecordService.deletePaymentRecord(paymentRecordId);
         return Result.success("删除缴费信息记录成功");
     }
 
-    @RequestMapping(value = "/pay")
-    public Result payForTheHouse(@RequestParam("paymentRecordId") Integer paymentRecordId){
+    @RequestMapping(value = "/pay/{paymentRecordId}")
+    public Result payForTheHouse(@PathVariable("paymentRecordId") Integer paymentRecordId){
         if (paymentRecordId == null){
             return Result.error("房租缴费失败，请选择您需要缴费的订单进行缴纳或联系管理员手动缴费");
         }

@@ -42,7 +42,7 @@
         <include refid="condition"></include>
         order by id asc
         <if test="currPage != null and pageSize != null">
-            limit #{currPage}, #{pageSize}
+            limit ${(currPage - 1) * pageSize}, #{pageSize}
         </if>
     </select>
 
@@ -64,10 +64,10 @@
             <if test="content != '' and content != null">
                 content = #{content},
             </if>
-            <if test="from_date != null">
+            <if test="fromDate != null">
                 from_date = #{fromDate},
             </if>
-            <if test="to_date != null">
+            <if test="toDate != null">
                 to_date = #{toDate},
             </if>
             <if test="phone != '' and phone != null">
@@ -100,13 +100,13 @@
             <if test="content != '' and content != null">
                 content = #{content},
             </if>
-            <if test="from_date != null">
+            <if test="fromDate != null">
                 from_date = #{fromDate},
             </if>
-            <if test="to_date != null">
+            <if test="toDate != null">
                 to_date = #{toDate},
             </if>
-            <if test="phone != '' and phone != null">
+            <if test="phone != null and phone != ''">
                 phone = #{phone},
             </if>
             <if test="email != '' and email != null">

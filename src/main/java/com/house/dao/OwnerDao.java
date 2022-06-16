@@ -1,6 +1,7 @@
 package com.house.dao;
 
 import com.house.pojo.Owner;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +16,9 @@ public interface OwnerDao {
 
     Integer update(Owner owner);
 
+    Integer updateByAdmin(Owner owner);
+
     Integer insert(Owner owner);
 
-    Integer delete(List<Integer> ownerIds);
+    Integer delete(@Param("ownerIds") List<Integer> ownerIds);
 }

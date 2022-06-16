@@ -1,8 +1,10 @@
 package com.house.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.house.common.Constant;
 import com.house.common.Result;
 import com.house.component.BCryptPasswordEncoderUtil;
+import com.house.component.LoginAuthProvider;
 import com.house.component.RedisCache;
 import com.house.dto.AuthUser;
 import com.house.dto.LoginUser;
@@ -40,7 +42,7 @@ public class LoginServiceImpl implements LoginService {
 
     private final BCryptPasswordEncoderUtil bCryptPasswordEncoderUtil;
 
-    private final AuthenticationManager authenticationManager;
+    private final LoginAuthProvider loginAuthProvider;
 
     private final UserDetailsService userDetailsService;
 
@@ -48,9 +50,9 @@ public class LoginServiceImpl implements LoginService {
 
     private final JwtUtil jwtUtil;
 
-    public LoginServiceImpl(UserService userService, AuthenticationManager authenticationManager, UserDetailsService userDetailsService, RedisCache redisCache, JwtUtil jwtUtil, BCryptPasswordEncoderUtil bCryptPasswordEncoderUtil) {
+    public LoginServiceImpl(UserService userService, LoginAuthProvider loginAuthProvider, UserDetailsService userDetailsService, RedisCache redisCache, JwtUtil jwtUtil, BCryptPasswordEncoderUtil bCryptPasswordEncoderUtil) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
+        this.loginAuthProvider = loginAuthProvider;
         this.userDetailsService = userDetailsService;
         this.redisCache = redisCache;
         this.jwtUtil = jwtUtil;
@@ -60,7 +62,7 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public Result doLogin(LoginUser loginUser) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginUser.getUsername(), loginUser.getPassword());
-        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+        Authentication authentication = loginAuthProvider.authenticate(authenticationToken);
         if (Objects.isNull(authentication)){
             throw new OperationException(ExceptionEnum.USER_NOT_FOUND_OR_PASSWORD_WRONG);
         }
@@ -75,6 +77,7 @@ public class LoginServiceImpl implements LoginService {
 
         Map<String, String> map = new HashMap<>();
         map.put("token", token);
+
         return Result.success("登录成功", map);
     }
 
@@ -94,7 +97,11 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Transactional
     public Result register(User user) {
+        String oldPassword = user.getPassword();
+        String newPassword = bCryptPasswordEncoderUtil.encode(oldPassword);
+        user.setPassword(newPassword);
         userService.addUser(user);
+        user.setPassword(oldPassword);
         Result result = doLogin(ConvertUtil.convert(user));
         result.setMessage("注册成功，自动登录");
         return result;

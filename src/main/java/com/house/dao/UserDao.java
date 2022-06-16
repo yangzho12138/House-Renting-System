@@ -19,6 +19,6 @@ public interface UserDao {
 
 	Integer insert(User user);
 
-	Integer delete(List<Integer> userIds);
+	Integer delete(@Param("userIds") List<Integer> userIds);
 
 }

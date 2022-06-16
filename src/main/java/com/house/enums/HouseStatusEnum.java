@@ -4,7 +4,8 @@ public enum  HouseStatusEnum {
 
     Not_Rented(0, "未出租"),
     Rented(1, "已出租"),
-    Out_Date(2, "租期到期且未缴费");
+    Out_Date(2, "租期到期且未缴费"),
+    Sealed(3, "已被封禁");
 
     private final Integer code;
 

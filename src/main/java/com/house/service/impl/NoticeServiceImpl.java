@@ -39,10 +39,12 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public void updateByUserId(Notice notice) {
-        Integer update = noticeDao.updateByUserId(notice);
-        if (update < 1){
-            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "更新消息通知失败");
+        try{
+            Integer update = noticeDao.updateByUserId(notice);
+        } catch (Exception e){
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, "消息更新失败");
         }
+
     }
 
     @Override

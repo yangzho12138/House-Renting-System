@@ -1,6 +1,7 @@
 package com.house.dao;
 
 import com.house.pojo.Renter;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public interface RenterDao {
 
     Integer insert(Renter renter);
 
-    Integer delete(List<Integer> renterIds);
+    Integer delete(@Param("renterIds") List<Integer> renterIds);
 }

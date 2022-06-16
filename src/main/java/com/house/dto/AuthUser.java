@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * @version 用户认证信息
@@ -17,9 +18,9 @@ public class AuthUser implements UserDetails {
 
     private User user;
 
-    private Collection<? extends GrantedAuthority> authorities;
+    private List<? extends GrantedAuthority> authorities;
 
-    public AuthUser(User user, Collection<? extends GrantedAuthority> authorities) {
+    public AuthUser(User user, List<? extends GrantedAuthority> authorities) {
         this.user = user;
         this.authorities = authorities;
     }
@@ -30,17 +31,17 @@ public class AuthUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     public String getPassword() {
@@ -55,7 +56,7 @@ public class AuthUser implements UserDetails {
         return authorities;
     }
 
-    public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
+    public void setAuthorities(List<? extends GrantedAuthority> authorities) {
         this.authorities = authorities;
     }
 

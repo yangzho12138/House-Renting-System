@@ -8,7 +8,6 @@ import com.house.exception.OperationException;
 import com.house.pojo.Renter;
 import com.house.service.RenterService;
 import com.house.utils.UserUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +19,10 @@ import java.util.List;
 @Service
 public class RenterServiceImpl implements RenterService {
 
-    private final UserUtil userUtil;
-
     private final RenterDao renterDao;
 
-    public RenterServiceImpl(RenterDao renterDao, UserUtil userUtil) {
+    public RenterServiceImpl(RenterDao renterDao) {
         this.renterDao = renterDao;
-        this.userUtil = userUtil;
     }
 
     @Override
@@ -40,7 +36,7 @@ public class RenterServiceImpl implements RenterService {
 
     @Override
     public void register(Renter renter) {
-        renter.setRenterId(userUtil.getUserInfo().getId());
+        renter.setRenterId(UserUtil.getUserInfo().getId());
         Integer insert = renterDao.insert(renter);
         if (insert < 1){
             throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "租户信息登记失败");
@@ -49,17 +45,20 @@ public class RenterServiceImpl implements RenterService {
 
     @Override
     public void updateRenter(Renter renter) {
-        Integer update = renterDao.update(renter);
-        if (update < 1){
-            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "更新租戶 " + renter.getRenterId()+ " 信息失敗");
+        try{
+            Integer update = renterDao.update(renter);
+        } catch (Exception e){
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, "租户信息更新失败");
         }
+
     }
 
     @Override
     public void deleteRenter(Integer userId) {
-        Integer delete = renterDao.delete(ImmutableList.of(userId));
-        if (delete < 1){
-            throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "删除租户信息失败");
+        try{
+            Integer delete = renterDao.delete(ImmutableList.of(userId));
+        } catch (Exception e){
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, "删除租户信息失败");
         }
     }
 }

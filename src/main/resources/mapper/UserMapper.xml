@@ -39,7 +39,7 @@
         <include refid="condition"></include>
         order by id asc
         <if test="currPage != null and pageSize != null">
-            limit currPage, pageSize
+            limit ${(currPage - 1) * pageSize}, #{pageSize}
         </if>
     </select>
 
@@ -69,7 +69,7 @@
                 type = #{type},
             </if>
             <if test="status != null">
-                status = #{status}
+                status = #{status},
             </if>
             <if test="info != '' and info != null">
                 info = #{info},

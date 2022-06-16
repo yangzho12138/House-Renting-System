@@ -7,7 +7,11 @@ public interface HouseOwnerService {
 
     void updateOwner(Owner owner);
 
+    void updateOwnerByAdmin(Owner owner);
+
     void deleteOwner(Integer ownerId);
 
     Owner getByOwnerId(Integer ownerId);
+
+    void sealHouseOwner(Integer ownerId);
 }

@@ -1,6 +1,7 @@
 package com.house.dao;
 
 import com.house.pojo.Notice;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface NoticeDao {
 
     Integer update(Notice notice);
 
-    Integer delete(List<Integer> noticeIds);
+    Integer delete(@Param("noticeIds") List<Integer> noticeIds);
 
     Integer updateByUserId(Notice notice);
 }

@@ -85,6 +85,8 @@ public class ScheduleTask {
         });
     }
 
+    //TODO 每到一个月还需要重新更新 PaymentRecord 中租金关系，开始催缴用户
+
 }
 
 

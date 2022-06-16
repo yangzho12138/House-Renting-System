@@ -17,6 +17,15 @@ spring:
         username: root
         password: 123456
         initialize: true
+  redis:
+    host: 49.235.119.209
+    timeout: 1209600000
+    jedis:
+      pool:
+        max-active: 10
+    lettuce:
+      shutdown-timeout: 100
+
 ## 该配置节点为独立的节点，有很多同学容易将这个配置放在spring的节点下，导致配置无法被识别
 mybatis:
    mapper-locations: classpath:mapper/*.xml #注意：一定要对应mapper映射xml文件的所在路径
@@ -31,26 +40,26 @@ jwt:
   header: Authorization #请求头部存放的 token 令牌
   refresh_expiration: 651000000 #刷新 token 的过期时间 7 天
 
-#redis配置
-redis:
-  #服务器地址
-  host: 49.235.119.209
-  #端口
-  port: 6379
-  #redis密码
-  password: 622820
-  #超时时间
-  timeout: 1209600000ms
-  lettuce:
-    pool:
-      #最大链接数，默认8
-      max-active: 8
-      #最大连接阻塞等待时间，默认-1
-      max-wait: 10000ms
-      #最大空闲连接，默认8
-      max-idle: 200
-      #最小空闲连接，默认0
-      min-idle: 5
+##redis配置
+#redis:
+#  #服务器地址
+#  host: 49.235.119.209
+#  #端口
+#  port: 6379
+#  #redis密码
+#  password: 622820
+#  #超时时间
+#  timeout: 1209600000ms
+#  lettuce:
+#    pool:
+#      #最大链接数，默认8
+#      max-active: 8
+#      #最大连接阻塞等待时间，默认-1
+#      max-wait: 10000ms
+#      #最大空闲连接，默认8
+#      max-idle: 200
+#      #最小空闲连接，默认0
+#      min-idle: 5
 
 
 

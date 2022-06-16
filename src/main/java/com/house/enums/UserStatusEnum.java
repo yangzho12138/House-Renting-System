@@ -20,7 +20,7 @@ public enum UserStatusEnum {
         this.status = status;
     }
 
-    public String of(Integer code){
+    public static String of(Integer code){
         for (UserStatusEnum value : UserStatusEnum.values()) {
             if (value.code.equals(code)){
                 return value.status;

@@ -4,9 +4,8 @@ import javax.validation.constraints.NotBlank;
 
 public class PasswordVO {
 
-    private Integer userId;
-
-    private String phoneNumber;
+    @NotBlank(message = "用户电话号码不为空")
+    private String phone;
 
     @NotBlank(message = "用户旧密码不为空")
     private String oldPassword;
@@ -14,20 +13,12 @@ public class PasswordVO {
     @NotBlank(message = "用户新密码不为空")
     private String newPassword;
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getOldPassword() {

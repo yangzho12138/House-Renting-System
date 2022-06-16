@@ -1,11 +1,13 @@
 package com.house.config;
 
+import com.house.component.LoginAuthProvider;
 import com.house.component.MyAccessDeniedHandler;
 import com.house.component.MyAuthenticationEntryPoint;
 import com.house.component.MyOncePerRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -26,16 +28,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final MyAccessDeniedHandler myAccessDeniedHandler;
 
-    public WebSecurityConfig(MyOncePerRequestFilter myOncePerRequestFilter, MyAuthenticationEntryPoint myAuthenticationEntryPoint, MyAccessDeniedHandler myAccessDeniedHandler) {
+    private final LoginAuthProvider loginAuthProvider;
+
+    public WebSecurityConfig(MyOncePerRequestFilter myOncePerRequestFilter, MyAuthenticationEntryPoint myAuthenticationEntryPoint, MyAccessDeniedHandler myAccessDeniedHandler, LoginAuthProvider loginAuthProvider) {
         this.myOncePerRequestFilter = myOncePerRequestFilter;
         this.myAuthenticationEntryPoint = myAuthenticationEntryPoint;
         this.myAccessDeniedHandler = myAccessDeniedHandler;
+        this.loginAuthProvider = loginAuthProvider;
     }
 
-    @Bean
+//    @Bean
+//    @Override
+//    public AuthenticationManager authenticationManager() throws Exception{
+//        return super.authenticationManagerBean();
+//    }
+
     @Override
-    public AuthenticationManager authenticationManager() throws Exception{
-        return super.authenticationManagerBean();
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(loginAuthProvider);
     }
 
     @Override
@@ -45,8 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         //关闭 CSRF 防御
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/user/register", "/user/login", "/user/check_login").permitAll()
-                .antMatchers("/admin/*").hasAnyRole("ROLE_ADMIN")
+                .antMatchers("/user/register", "/doLogin").permitAll()
+                .antMatchers("/admin/**").hasAnyAuthority("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -26,4 +26,6 @@ public interface HouseService {
     House getHouseById(Integer houseId);
 
     void deleteHouses(List<Integer> houseIds);
+
+    void deleteHouseForce(Integer houseId);
 }

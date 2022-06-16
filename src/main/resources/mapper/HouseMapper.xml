@@ -33,7 +33,7 @@
                 and owner_id = #{ownerId}
             </if>
             <if test="priceLimit != null">
-                and price &gt; #{priceLimit}
+                and price &gt;= #{priceLimit}
             </if>
             <if test="priceBound != null">
                 and price &lt;= #{priceBound}
@@ -45,12 +45,12 @@
     </sql>
 
     <select id="select" resultMap="HouseResult">
-        select * from houselist
+        select * from house
         <include refid="condition"></include>
         order by
         status ASC ,id ASC
         <if test="currPage != null and pageSize != null">
-            limit #{currPage}, #{pageSize}
+            limit ${(currPage - 1) * pageSize}, #{pageSize}
         </if>
     </select>
 
@@ -102,4 +102,5 @@
             #{houseId}
         </foreach>
     </delete>
+
 </mapper>

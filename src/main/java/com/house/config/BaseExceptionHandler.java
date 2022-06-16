@@ -16,8 +16,6 @@ public class BaseExceptionHandler {
 
     @ExceptionHandler(value = OperationException.class)
     public Result exception(OperationException e){
-        return Result.error(e.getExceptionType().getMessage());
+        return Result.error(e.getExceptionType().getMessage() + "\n" + e.getExceptionReason());
     }
-
-    //TODO 异常处理机制修改
 }

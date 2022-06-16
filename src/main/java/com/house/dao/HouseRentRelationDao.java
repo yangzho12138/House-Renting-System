@@ -11,7 +11,7 @@ public interface HouseRentRelationDao {
 
     List<HouseRentRelation> select(Map<String, Object> params);
 
-    Integer insert(List<HouseRentRelation> houseRentRelations);
+    Integer insert(HouseRentRelation houseRentRelation);
 
     Integer update(HouseRentRelation houseRentRelation);
 

@@ -26,7 +26,7 @@
         <include refid="condition"></include>
         order by house_id
         <if test="currPage != null and pageSize != null">
-            limit #{currPage}, #{pageSize}
+            limit ${(currPage - 1) * pageSize}, #{pageSize}
         </if>
     </select>
 

@@ -1,6 +1,7 @@
 package com.house.dao;
 
 import com.house.pojo.House;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ public interface HouseDao {
 
      Integer update(House house);
 
-     Integer delete(List<Integer> houseIds);
+     Integer delete(@Param("houseIds") List<Integer> houseIds);
 
      Integer count(Map<String, Object> params);
 }

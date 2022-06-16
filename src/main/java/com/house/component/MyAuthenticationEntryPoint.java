@@ -2,6 +2,7 @@ package com.house.component;
 
 import com.house.common.JSONAuthentication;
 import com.house.common.Result;
+import com.house.common.StatusCode;
 import com.house.enums.ExceptionEnum;
 import com.house.exception.OperationException;
 import org.slf4j.Logger;
@@ -27,26 +28,28 @@ public class MyAuthenticationEntryPoint extends JSONAuthentication implements Au
         //打印错误
         logger.error(String.valueOf(authException));
 
+        Result result;
         if (authException instanceof AccountExpiredException) {
             //账号过期
-            throw new OperationException(ExceptionEnum.USER_ACCOUNT_EXPIRED);
+            result = Result.error(ExceptionEnum.USER_ACCOUNT_EXPIRED.getMessage(), StatusCode.LOGIN_ERROR);
         } else if (authException instanceof InternalAuthenticationServiceException) {
             //用户不存在
-            throw new OperationException(ExceptionEnum.USER_ACCOUNT_NOT_EXIST);
+            result = Result.error(ExceptionEnum.USER_ACCOUNT_NOT_EXIST.getMessage(), StatusCode.LOGIN_ERROR);
         } else if (authException instanceof BadCredentialsException) {
             //用户名或密码错误（也就是用户名匹配不上密码）
-            throw new OperationException(ExceptionEnum.USER_NOT_FOUND_OR_PASSWORD_WRONG);
+            result = Result.error(ExceptionEnum.USER_NOT_FOUND_OR_PASSWORD_WRONG.getMessage(), StatusCode.LOGIN_ERROR);
         } else if (authException instanceof CredentialsExpiredException) {
             //密码过期
-            throw new OperationException(ExceptionEnum.USER_ACCOUNT_PASSWORD_EXPIRED);
+            result = Result.error(ExceptionEnum.USER_ACCOUNT_PASSWORD_EXPIRED.getMessage(), StatusCode.LOGIN_ERROR);
         } else if (authException instanceof DisabledException) {
             //账号不可用
-            throw new OperationException(ExceptionEnum.USER_ACCOUNT_DISABLE);
+            result = Result.error(ExceptionEnum.USER_ACCOUNT_DISABLE.getMessage(), StatusCode.LOGIN_ERROR);
         } else if (authException instanceof LockedException) {
             //账号锁定
-            throw new OperationException(ExceptionEnum.USER_ACCOUNT_LOCKED);
+            result = Result.error(ExceptionEnum.USER_ACCOUNT_LOCKED.getMessage(), StatusCode.LOGIN_ERROR);
         } else {
-            throw new OperationException(ExceptionEnum.USER_NOT_LOGIN);
+            result = Result.error(ExceptionEnum.USER_NOT_LOGIN.getMessage(), StatusCode.LOGIN_ERROR);
         }
+        WriteJSON(request, response, result);
     }
 }

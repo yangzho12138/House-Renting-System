@@ -1,6 +1,7 @@
 package com.house.dao;
 
 import com.house.pojo.PaymentRecord;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +18,5 @@ public interface PaymentRecordDao {
 
     Integer update(PaymentRecord paymentRecord);
 
-    Integer delete(List<Integer> paymentRecordIds);
+    Integer delete(@Param("paymentRecordIds") List<Integer> paymentRecordIds);
 }

@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * @version 自定义校验注解：是否为对应类的枚举值
  * @since 2022/5/20
  **/
-@Constraint(validatedBy = {})
+@Constraint(validatedBy = {EnumValidator.class})
 @Target({ElementType.FIELD, ElementType.TYPE_USE, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnumValid {

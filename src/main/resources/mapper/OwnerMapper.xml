@@ -65,17 +65,33 @@
             <if test="address != '' and address != null">
                 address = #{address},
             </if>
-            <if test="cardId != '' and cardId != null">
+            <if test="info != '' and info != null">
+                info = #{info}
+            </if>
+        </set>
+        where owner_id = #{ownerId}
+    </update>
+
+    <update id="updateByAdmin">
+        update owner
+        <set>
+            <if test="name != null and name != ''">
+                name = #{name},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+            <if test="cardId != null and cardId != ''">
                 card_id = #{cardId},
             </if>
-            <if test="phone != '' and phone != null">
+            <if test="phone != null and phone != ''">
                 phone = #{phone},
             </if>
             <if test="status != null">
                 status = #{status},
             </if>
             <if test="info != '' and info != null">
-                info = #{info}
+                info = #{info},
             </if>
         </set>
         where owner_id = #{ownerId}

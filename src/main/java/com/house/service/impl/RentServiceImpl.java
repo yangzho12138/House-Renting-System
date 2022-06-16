@@ -25,8 +25,6 @@ import java.util.Map;
 @Service
 public class RentServiceImpl implements RentService {
 
-    private final UserUtil userUtil;
-
     private final HouseRentRelationDao houseRentRelationDao;
 
     private final RenterService renterService;
@@ -37,8 +35,7 @@ public class RentServiceImpl implements RentService {
 
     private final PaymentRecordService paymentRecordService;
 
-    public RentServiceImpl(UserUtil userUtil, HouseRentRelationDao houseRentRelationDao, RenterService renterService, HouseService houseService, HouseOwnerService ownerService, PaymentRecordService paymentRecordService) {
-        this.userUtil = userUtil;
+    public RentServiceImpl(HouseRentRelationDao houseRentRelationDao, RenterService renterService, HouseService houseService, HouseOwnerService ownerService, PaymentRecordService paymentRecordService) {
         this.houseRentRelationDao = houseRentRelationDao;
         this.renterService = renterService;
         this.houseService = houseService;
@@ -51,7 +48,7 @@ public class RentServiceImpl implements RentService {
     @Transactional
     public void rent(Integer houseId) {
         //1. 通过 Authentication 认证拿取目前的用户(租户)相关信息
-        User userInfo = userUtil.getUserInfo();
+        User userInfo = UserUtil.getUserInfo();
         // 判断该用户是否租赁过房源，未租赁过房源返回错误，请用户完善租户信息
         Renter renter = renterService.getRenterByRenterId(userInfo.getId());
         if (renter == null){
@@ -59,7 +56,7 @@ public class RentServiceImpl implements RentService {
         }
         //2. 通过 houseId 查询对应的 House 信息，House 假如状态是已租赁，则抛出异常
         House house = houseService.getHouseById(houseId);
-        if (HouseStatusEnum.Rented.getCode().equals(house.getStatus())){
+        if (!HouseStatusEnum.Not_Rented.getCode().equals(house.getStatus())){
             throw new OperationException(ExceptionEnum.HOUSE_RENTED);
         }
         //3. 通过 houseId 查询对应的 Owner 信息
@@ -68,7 +65,7 @@ public class RentServiceImpl implements RentService {
         HouseRentRelation houseRentRelation = new HouseRentRelation();
         houseRentRelation.setRenterId(renter.getRenterId());
         houseRentRelation.setHouseId(houseId);
-        houseRentRelationDao.insert(ImmutableList.of(houseRentRelation));
+        houseRentRelationDao.insert(houseRentRelation);
         //5. 插入 payment_record 计算具体的费用（平台费用从配置文件中读取）
         PaymentRecord paymentRecord = new PaymentRecord();
         paymentRecord.setHouseId(houseId);
@@ -82,13 +79,13 @@ public class RentServiceImpl implements RentService {
         House newHouse = new House();
         newHouse.setId(houseId);
         newHouse.setStatus(HouseStatusEnum.Rented.getCode());
-        houseService.updateHouse(house);
+        houseService.updateHouse(newHouse);
     }
 
     @Override
     @Transactional
     public void forceWithdraw(Integer houseId) {
-        Integer renterId = userUtil.getUserInfo().getId();
+        Integer renterId = UserUtil.getUserInfo().getId();
         //租户强制退租
         //1. 租户未缴费，直接删除 paymentRecord 记录
         Page<PaymentRecord> paymentRecords = paymentRecordService.findPaymentRecordListByPage(ImmutableMap.of("houseId", houseId,
@@ -109,6 +106,16 @@ public class RentServiceImpl implements RentService {
                                                                         "renterId", renterId));
         if (delete < 1){
             throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "插入数据失败");
+        }
+    }
+
+    @Override
+    public void deleteHouseRentRelation(Integer renterId) {
+        try{
+            houseRentRelationDao.delete(ImmutableMap.of(
+                    "renterId", renterId));
+        } catch (Exception e){
+            throw new OperationException(ExceptionEnum.DATABASE_CONNECTION_EXCEPTION, "删除租户关系失败");
         }
     }
 

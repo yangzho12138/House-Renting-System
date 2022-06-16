@@ -1,11 +1,7 @@
 package com.house.pojo;
 
 import com.house.enums.OwnerStatusEnum;
-import com.house.validate.HouseOwnerInsertValidate;
-import com.house.validate.HouseOwnerUpdateValidate;
-
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @version 房主信息实体类
@@ -20,15 +16,11 @@ public class Owner {
     /**
      * 房主 ID
      **/
-    @NotNull(message = "房主 ID 不为空",
-            groups = {HouseOwnerInsertValidate.class, HouseOwnerUpdateValidate.class})
     private Integer ownerId;
 
     /**
      * 房主名称
      **/
-    @NotBlank(message = "房主名称不为空",
-              groups = {HouseOwnerInsertValidate.class})
     private String name;
 
     /**
@@ -39,20 +31,18 @@ public class Owner {
     /**
      * 房主身份证号码
      **/
-    @NotBlank(message = "房主身份证号码不为空",
-              groups = {HouseOwnerInsertValidate.class})
+    @NotBlank(message = "房主身份证号码不为空")
     private String cardId;
 
     /**
      * 房主电话号码
      **/
-    @NotBlank(message = "房主电话号码不为空",
-            groups = {HouseOwnerInsertValidate.class})
     private String phone;
 
     /**
      * 房主是否已经注销
      **/
+    //TODO 普通用户不允许修改房主状态，只有管理员允许修改房东状态
     private Integer status = OwnerStatusEnum.Alive.getCode();
 
     /**

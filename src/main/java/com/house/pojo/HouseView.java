@@ -24,17 +24,17 @@ public class HouseView {
     /**
      * 租户 ID
      **/
-    @NotNull(message = "租户id不为空")
     private Integer renterId;
 
     /**
      * 看房日期
      **/
-    private Date viewDate;
+    private Date viewDate = new Date(new java.util.Date().getTime());
 
     /**
      * 看房评价星级
      **/
+    @NotNull(message = "评价星级不为空")
     private Integer star;
 
     /**

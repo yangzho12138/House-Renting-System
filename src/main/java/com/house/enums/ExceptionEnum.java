@@ -21,8 +21,10 @@ public enum ExceptionEnum {
     USER_NO_PERMISSIONS(10014, "用户权限不足"),
     REDIS_OPERATE_ERROR(10015, "Redis 缓存运行异常"),
     USER_NOT_REGISTER_AS_RENTER(10016, "用户未注册为租户，请补充填写租户信息"),
-    HOUSE_RENTED(10017, "房屋已被出租，请重新选房"),
-    PAYMENT_RECORD_PAYED(10018, "该订单已支付，请勿重复操作");
+    HOUSE_RENTED(10017, "房屋已被出租或被封控，请重新选房"),
+    PAYMENT_RECORD_PAYED(10018, "该订单已支付，请勿重复操作"),
+    DELETE_HOUSE_FORCE(10019, "该房子处于出租状态中，是否强制撤销该房产，需要按照比例赔付平台违约金及用户剩余时间租金"),
+    DATE_FORMAT_WRONG(10020, "日期格式填写错误，请重新订正提交");
 
     private final Integer code;
 

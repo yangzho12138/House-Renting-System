@@ -5,10 +5,10 @@ import com.house.common.Result;
 import com.house.pojo.User;
 import com.house.service.LoginService;
 import com.house.service.UserService;
+import com.house.utils.UserUtil;
 import com.house.validate.UserInsertValidate;
 import com.house.validate.UserUpdateValidate;
 import com.house.vo.PasswordVO;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,42 +28,47 @@ public class UserController {
 
 	@PostMapping(value = "/register")
 	public Result register(@Validated({UserInsertValidate.class}) @RequestBody User user){
+		user.setType("USER");
 		return loginService.register(user);
 	}
 
 	@RequestMapping(value = "/select",method = RequestMethod.GET)
 	public Result getUerListByCondition(@RequestParam Map<String, Object> params){
+		//TODO 转换 User 为 UserVO，将密码去除
 		return Result.success("按条件查找用户列表成功",
 				userService.findUserByPage(params));
 	}
 
-	@RequestMapping(value="/add",method = RequestMethod.POST)
-	public Result addUser(@Validated({UserInsertValidate.class}) @RequestBody User user){
-		userService.addUser(user);
-		return Result.success("添加用户成功");
-	}
-
 	@RequestMapping(value="/update",method = RequestMethod.PUT)
 	public Result updateUser(@Validated({UserUpdateValidate.class}) @RequestBody User user){
+		//此接口不接收密码修改和用户状态修改
+		user.setPassword(null);
+		user.setStatus(null);
+		user.setType(null);
 		userService.updateUser(user);
 		return Result.success("更新用户成功");
 	}
 
-	@RequestMapping(value="/delete/{userId}",method = RequestMethod.DELETE)
-	public Result deleteUser(@PathVariable("userId")Integer userId){
-		userService.deleteUser(userId);
-		return Result.success("删除用户成功");
-	}
-
 	@RequestMapping(value="/editPassword",method = RequestMethod.PUT)
 	public Result updateUser(@Validated @RequestBody PasswordVO passwordVO){
-		if (StringUtils.isEmpty(passwordVO.getPhoneNumber()) &&
-		   passwordVO.getUserId() == null){
-			return Result.error("用户登录账号 ID 和电话号码为空");
-		}
 		userService.updatePassword(passwordVO);
 		return Result.success("修改密码成功");
 	}
 
+	@RequestMapping(value="/delete",method = RequestMethod.DELETE)
+	public Result deleteUser(){
+		Integer userId = UserUtil.getUserInfo().getId();
+		userService.deleteUser(userId);
+		loginService.doLogout();
+		return Result.success("删除用户成功");
+	}
+
+	@DeleteMapping(value = "/deleteForce")
+	public Result deleteUserForce(){
+		Integer userId = UserUtil.getUserInfo().getId();
+		userService.deleteUserForce(userId);
+		loginService.doLogout();
+		return Result.success("成功删除用户");
+	}
 
 }
