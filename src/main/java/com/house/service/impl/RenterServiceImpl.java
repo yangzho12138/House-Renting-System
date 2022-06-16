@@ -37,6 +37,7 @@ public class RenterServiceImpl implements RenterService {
     @Override
     public void register(Renter renter) {
         renter.setRenterId(UserUtil.getUserInfo().getId());
+        renter.setPhone(UserUtil.getUserInfo().getPhone());
         Integer insert = renterDao.insert(renter);
         if (insert < 1){
             throw new OperationException(ExceptionEnum.DATABASE_OPERATION_EXCEPTION, "租户信息登记失败");

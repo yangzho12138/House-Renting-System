@@ -42,7 +42,6 @@ public class Owner {
     /**
      * 房主是否已经注销
      **/
-    //TODO 普通用户不允许修改房主状态，只有管理员允许修改房东状态
     private Integer status = OwnerStatusEnum.Alive.getCode();
 
     /**

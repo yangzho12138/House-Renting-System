@@ -35,6 +35,7 @@ public class HouseOwnerController {
      **/
     @PutMapping(value = "/update")
     public Result updateHouseOwner(@RequestBody Owner owner){
+        owner.setStatus(null);
         houseOwnerService.updateOwner(owner);
         return Result.success("更改房主信息成功");
     }

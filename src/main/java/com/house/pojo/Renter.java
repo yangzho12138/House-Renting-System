@@ -26,8 +26,6 @@ public class Renter {
     /**
      * 租户电话号码
      **/
-    //TODO 租户电话号码从 UserInfo 里拿取，不必填写
-    @NotBlank(message = "租户的电话号码不允许为空")
     private String phone;
 
     /**

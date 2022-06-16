@@ -34,7 +34,6 @@ public class UserController {
 
 	@RequestMapping(value = "/select",method = RequestMethod.GET)
 	public Result getUerListByCondition(@RequestParam Map<String, Object> params){
-		//TODO 转换 User 为 UserVO，将密码去除
 		return Result.success("按条件查找用户列表成功",
 				userService.findUserByPage(params));
 	}
